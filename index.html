@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKS Militar | Digital Library & Engineering Simulators</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131b2e;
+            --accent-color: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-color);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: var(--text-main);
+        }
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .card a {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .card a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LKS MILITAR // DIGITAL LIBRARY</h1>
+        <p class="subtitle">Repositório oficial de simuladores táticos, eletrodinâmica de radares e engenharia aeroespacial.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Radar Line-of-Sight</h3>
+                <p>Simulador de linha de visada geométrica e horizonte de radar considerando curvatura terrestre e refração atmosférica.</p>
+                <a href="simuladores/radar_los_simulator_v2.html" target="_blank">Acessar Módulo &rarr;</a>
+            </div>
+            <div class="card">
+                <h3>Tactical Combat Radius</h3>
+                <p>Calculadora de raio de combate, consumo específico de combustível e pontos de retorno para plataformas de combate.</p>
+                <a href="simuladores/projecao_lks.html" target="_blank">Acessar Módulo &rarr;</a>
+            </div>
+            <div class="card">
+                <h3>Technical Archives</h3>
+                <p>Documentação técnica consolidada, especificações de arquiteturas AESA e análise física de seção transversal de radar (RCS).</p>
+                <a href="docs/index.html" target="_blank">Abrir Documentação &rarr;</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
