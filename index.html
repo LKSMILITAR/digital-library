@@ -29,7 +29,6 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* Sidebar Mobile & Desktop */
     .sidebar {
       position: fixed; top: 0; left: 0; height: 100dvh; width: 280px;
       background: #090e17; border-right: 1px solid var(--border-color);
@@ -62,7 +61,6 @@
     .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 998; opacity: 0; pointer-events: none; transition: 0.3s; }
     .sidebar-backdrop.active { opacity: 1; pointer-events: auto; }
 
-    /* Area Principal */
     .main-wrapper { margin-left: 0; padding: 16px; width: 100%; position: relative; z-index: 1; }
 
     .top-header {
@@ -88,7 +86,6 @@
     }
     .view-btn.active { background: var(--bg-card-hover); color: var(--accent-color); border: 1px solid var(--border-accent); }
 
-    /* Estante Grid */
     .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
     
     .book-card {
@@ -116,23 +113,20 @@
     .book-title { font-size: 12px; font-weight: 700; color: var(--text-main); line-height: 1.3; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .book-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--accent-color); background: var(--accent-glow); padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; border: 1px solid var(--border-accent); }
 
-    /* Modulo Lista */
     .catalog-grid.list-view { display: flex; flex-direction: column; gap: 8px; }
     .catalog-grid.list-view .book-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 14px; }
     .catalog-grid.list-view .cover-container { width: 36px; height: 48px; margin-bottom: 0; flex-shrink: 0; }
     .catalog-grid.list-view .book-details { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-left: 12px; }
 
-    /* Paginação */
     .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 28px; }
     .page-link {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
-      width: 36px; height: 36px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;
       display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
     .page-link.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: 800; }
     .page-link:disabled { opacity: 0.3; cursor: not-allowed; }
 
-    /* Modal */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(3, 5, 9, 0.92); backdrop-filter: blur(8px);
       z-index: 999; display: none; align-items: center; justify-content: center; padding: 10px;
@@ -177,14 +171,7 @@
       <input type="text" id="search-input" placeholder="Buscar edição...">
     </div>
 
-    <ul class="nav-list">
-      <li>
-        <a class="active">
-          <i class='bx bxs-folder-open'></i>
-          <span class="link-name">Coleção Asas de Guerra</span>
-        </a>
-      </li>
-    </ul>
+    <ul class="nav-list" id="menu-list"></ul>
   </nav>
 
   <main class="main-wrapper">
@@ -194,8 +181,8 @@
           <i class='bx bx-menu'></i>
         </button>
         <div class="header-info">
-          <h1><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
-          <p>Acervo técnico especializado em aviação militar.</p>
+          <h1 id="modulo-titulo"><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
+          <p id="modulo-subtitulo">Acervo técnico especializado em aviação militar.</p>
         </div>
       </div>
 
@@ -220,9 +207,9 @@
   </div>
 
   <script>
-    const R2_BASE = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev/collection-asas";
+    const R2_BASE = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev";
     
-    const arquivosList = [
+    const colecaoAsasArquivos = [
       "Asas de Guerra (Planeta) - 01_text.pdf", "Asas de Guerra (Planeta) - 02_text.pdf",
       "Asas de Guerra (Planeta) - 03_text.pdf", "Asas de Guerra (Planeta) - 04_text.pdf",
       "Asas de Guerra (Planeta) - 05_text.pdf", "Asas de Guerra (Planeta) - 06_text.pdf",
@@ -248,21 +235,35 @@
       "Asas de Guerra (Planeta) - 54_text.pdf"
     ];
 
-    const catalogData = arquivosList.map(file => {
-      const imgName = file.replace(".pdf", ".jpg"); // Ex: Asas de Guerra (Planeta) - 54_text.jpg
-      const baseName = file.replace("_text.pdf", "").replace(".pdf", "");
-      const num = baseName.split("-").pop().trim();
-      
-      return {
-        numEdicao: num,
-        titulo: `Asas de Guerra - Edição ${num}`,
-        pdf_url: `${R2_BASE}/${encodeURIComponent(file)}`,
-        capa_url: `${R2_BASE}/${encodeURIComponent(imgName)}`,
-        formato: "PDF"
-      };
-    });
+    const colecaoOspreyArquivos = [
+      "01_Osprey.pdf", "02_Osprey.pdf", "03_Osprey.pdf", "04_Osprey.pdf", "05_Osprey.pdf",
+      "06_Osprey.pdf", "07_Osprey.pdf", "08_Osprey.pdf", "09_Osprey.pdf", "10_Osprey.pdf"
+    ];
 
-    let filteredData = [...catalogData];
+    const modulos = [
+      { 
+        id: "collection-asas", 
+        nome: "Coleção Asas de Guerra", 
+        subtitulo: "Acervo técnico especializado em aviação militar.",
+        icon: "bxs-folder-open", 
+        pastaR2: "collection-asas", 
+        lista: colecaoAsasArquivos,
+        prefixoTitulo: "Asas de Guerra - Edição "
+      },
+      { 
+        id: "collection-osprey", 
+        nome: "Coleção Osprey Publishing", 
+        subtitulo: "Monografias e manuais de sistemas de armas e aeronaves.",
+        icon: "bxs-book-alt", 
+        pastaR2: "collection-osprey", 
+        lista: colecaoOspreyArquivos,
+        prefixoTitulo: "Osprey Edition - Volume "
+      }
+    ];
+
+    let moduloAtivo = "collection-asas";
+    let catalogData = [];
+    let filteredData = [];
     let currentPage = 1;
     const itemsPerPage = 12;
 
@@ -271,6 +272,54 @@
     const searchInput = document.getElementById('search-input');
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('backdrop');
+
+    function renderizarMenu() {
+      const menuContainer = document.getElementById('menu-list');
+      menuContainer.innerHTML = '';
+      modulos.forEach(m => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <a class="${m.id === moduloAtivo ? 'active' : ''}" data-id="${m.id}">
+            <i class='bx ${m.icon}'></i>
+            <span class="link-name">${m.nome}</span>
+          </a>
+        `;
+        li.querySelector('a').addEventListener('click', () => {
+          if (sidebar.classList.contains('open')) toggleSidebar();
+          carregarModulo(m.id);
+        });
+        menuContainer.appendChild(li);
+      });
+    }
+
+    function carregarModulo(idModulo) {
+      moduloAtivo = idModulo;
+      const mod = modulos.find(m => m.id === idModulo) || modulos[0];
+
+      document.getElementById('modulo-titulo').innerHTML = `<i class='bx ${mod.icon}' style="color:var(--accent-color)"></i> ${mod.nome}`;
+      document.getElementById('modulo-subtitulo').innerText = mod.subtitulo;
+
+      renderizarMenu();
+
+      catalogData = mod.lista.map(file => {
+        const imgName = file.replace(".pdf", ".jpg");
+        const baseName = file.replace("_text.pdf", "").replace(".pdf", "").replace("_Osprey", "");
+        const num = baseName.split("-").pop().replace("_", "").trim();
+        
+        return {
+          numEdicao: num,
+          titulo: `${mod.prefixoTitulo}${num}`,
+          pdf_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(file)}`,
+          capa_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(imgName)}`,
+          formato: "PDF"
+        };
+      });
+
+      filteredData = [...catalogData];
+      searchInput.value = '';
+      currentPage = 1;
+      renderCurrentPage();
+    }
 
     function renderCurrentPage() {
       catalogContainer.innerHTML = '';
@@ -295,7 +344,7 @@
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="fallback-cover" style="display:none;">
               <i class='bx bxs-file-pdf'></i>
-              <span>EDIÇÃO ${item.numEdicao}</span>
+              <span>VOL. ${item.numEdicao}</span>
             </div>
           </div>
           <div class="book-details">
@@ -371,7 +420,9 @@
       catalogContainer.className = 'catalog-grid list-view';
     });
 
-    document.addEventListener('DOMContentLoaded', renderCurrentPage);
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarModulo('collection-asas');
+    });
   </script>
 </body>
 </html>
