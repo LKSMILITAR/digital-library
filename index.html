@@ -3,149 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LKSMILITAR - Biblioteca Técnica</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+  <title>LKSMILITAR - Dynamic Technical Library</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; }
-    html, body { width: 100%; min-height: 100dvh; background: #080c14; color: #f8fafc; overflow-x: hidden; }
+    :root {
+      --bg-main: #06090e;
+      --bg-card: #0d131e;
+      --bg-card-hover: #141c2d;
+      --border-color: #1e293b;
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --accent-color: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
+    }
 
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html, body { width: 100%; min-height: 100dvh; background: var(--bg-main); color: var(--text-main); overflow-x: hidden; }
+
+    /* Fundo Tecnológico Sutil */
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.05) 0%, transparent 75%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Layout da Sidebar */
     .sidebar {
-      position: fixed; top: 0; left: 0;
-      height: 100dvh; width: 78px;
-      background: #0f172a; border-right: 1px solid #1e293b;
-      padding: 12px; z-index: 99;
-      transition: width 0.3s ease, transform 0.3s ease;
-      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; height: 100dvh; width: 80px;
+      background: #090e17; border-right: 1px solid var(--border-color);
+      padding: 16px 12px; z-index: 99; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column; backdrop-filter: blur(10px);
     }
-    .sidebar.open { width: 260px; }
-    .sidebar .logo-details { height: 48px; display: flex; align-items: center; position: relative; margin-bottom: 12px; }
-    .sidebar .logo-details .icon { color: #38bdf8; font-size: 22px; min-width: 52px; text-align: center; }
-    .sidebar .logo-details .logo_name { color: #f8fafc; font-size: 14px; font-weight: 700; opacity: 0; transition: 0.2s; white-space: nowrap; letter-spacing: 0.5px; }
-    .sidebar.open .logo-details .logo_name { opacity: 1; }
-    .sidebar .logo-details #btn { position: absolute; right: 0; font-size: 20px; color: #94a3b8; cursor: pointer; min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+    .sidebar.open { width: 280px; }
+    
+    .logo-details { height: 50px; display: flex; align-items: center; position: relative; margin-bottom: 20px; }
+    .logo-details i.icon { color: var(--accent-color); font-size: 26px; min-width: 56px; text-align: center; filter: drop-shadow(0 0 8px var(--accent-glow)); }
+    .logo-name { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 1px; opacity: 0; transition: 0.2s; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+    .sidebar.open .logo-name { opacity: 1; }
+    .logo-details #btn-toggle { position: absolute; right: 0; font-size: 22px; color: var(--text-muted); cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 
-    .sidebar .search-box { position: relative; margin-bottom: 12px; }
-    .sidebar .search-box input {
-      font-size: 12px; color: #f8fafc; outline: none; height: 38px; width: 100%;
-      border: 1px solid #1e293b; border-radius: 8px; background: #080c14; padding: 0 10px 0 38px;
+    .search-box { position: relative; margin-bottom: 16px; }
+    .search-box input {
+      font-size: 13px; color: var(--text-main); outline: none; height: 42px; width: 100%;
+      border: 1px solid var(--border-color); border-radius: 8px; background: #05080f; padding: 0 12px 0 42px;
+      transition: border-color 0.2s;
     }
-    .sidebar .search-box .bx-search { position: absolute; top: 50%; left: 10px; transform: translateY(-50%); font-size: 16px; color: #64748b; }
+    .search-box input:focus { border-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow); }
+    .search-box i { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); font-size: 18px; color: var(--text-muted); }
 
-    .sidebar .nav-list { flex: 1; overflow-y: auto; overflow-x: hidden; }
-    .sidebar .nav-list::-webkit-scrollbar { width: 3px; }
-    .sidebar li { position: relative; margin-bottom: 4px; list-style: none; }
-    .sidebar li a { display: flex; height: 40px; width: 100%; border-radius: 8px; align-items: center; text-decoration: none; transition: 0.2s; cursor: pointer; }
-    .sidebar li a:hover, .sidebar li a.active { background: #1e293b; }
-    .sidebar li i { height: 40px; min-width: 52px; font-size: 18px; text-align: center; line-height: 40px; color: #38bdf8; }
-    .sidebar li a .links_name { color: #cbd5e1; font-size: 12.5px; font-weight: 500; opacity: 0; white-space: nowrap; transition: 0.2s; }
-    .sidebar.open li a .links_name { opacity: 1; }
+    .nav-list { flex: 1; overflow-y: auto; list-style: none; }
+    .nav-list li { margin-bottom: 6px; }
+    .nav-list a { display: flex; height: 44px; border-radius: 8px; align-items: center; text-decoration: none; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
+    .nav-list a:hover, .nav-list a.active { background: var(--bg-card-hover); border-color: var(--border-accent); }
+    .nav-list a i { height: 44px; min-width: 56px; font-size: 20px; text-align: center; line-height: 44px; color: var(--accent-color); }
+    .nav-list a .link-name { color: #cbd5e1; font-size: 13px; font-weight: 600; opacity: 0; white-space: nowrap; transition: 0.2s; }
+    .sidebar.open .nav-list a .link-name { opacity: 1; }
 
-    .sidebar-backdrop {
-      position: fixed; inset: 0; background: rgba(8, 12, 20, 0.7);
-      backdrop-filter: blur(3px); z-index: 98; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-    }
+    .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 98; opacity: 0; pointer-events: none; transition: 0.3s; }
     .sidebar-backdrop.active { opacity: 1; pointer-events: auto; }
 
-    .home-section { margin-left: 78px; padding: 20px 24px; transition: margin-left 0.3s ease; width: calc(100% - 78px); }
-    .sidebar.open ~ .home-section { margin-left: 260px; width: calc(100% - 260px); }
+    /* Area Principal */
+    .main-wrapper { margin-left: 80px; padding: 28px 36px; transition: margin-left 0.3s; width: calc(100% - 80px); position: relative; z-index: 1; }
+    .sidebar.open ~ .main-wrapper { margin-left: 280px; width: calc(100% - 280px); }
 
-    .header-bar {
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
-      margin-bottom: 20px; background: #0f172a; padding: 14px 20px;
-      border-radius: 10px; border: 1px solid #1e293b;
+    .top-header {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+      margin-bottom: 28px; background: var(--bg-card); padding: 18px 26px; border-radius: 12px;
+      border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-title h1 { font-size: 16px; font-weight: 700; color: #f8fafc; letter-spacing: 0.3px; }
-    .header-title p { font-size: 12px; color: #64748b; margin-top: 2px; }
-
-    .mobile-toggle {
-      display: none; border: 1px solid #1e293b; background: #080c14; color: #f8fafc;
-      font-size: 20px; cursor: pointer; min-width: 38px; min-height: 38px;
-      border-radius: 8px; align-items: center; justify-content: center;
-    }
-
-    .view-toggle { display: flex; gap: 4px; background: #080c14; padding: 3px; border-radius: 6px; border: 1px solid #1e293b; }
-    .toggle-btn {
-      border: none; background: transparent; padding: 6px 10px; min-width: 34px; min-height: 34px;
-      border-radius: 4px; cursor: pointer; color: #64748b; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
-    }
-    .toggle-btn.active { background: #1e293b; color: #38bdf8; }
-
-    /* Estilo de Lista Compacta de Biblioteca */
-    .pdf-container { display: flex; flex-direction: column; gap: 8px; }
-    .pdf-card {
-      background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; transition: border-color 0.2s, background-color 0.2s;
-    }
-    .pdf-card:hover { border-color: #38bdf8; background: #1e293b/50; }
+    .header-info h1 { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .header-info p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
     
-    .list-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
-    .doc-icon {
-      width: 36px; height: 36px; background: #080c14; border: 1px solid #1e293b; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center; font-size: 18px; color: #38bdf8; flex-shrink: 0;
+    .view-controls { display: flex; gap: 6px; background: #05080f; padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .view-btn {
+      border: none; background: transparent; padding: 8px 14px; border-radius: 6px; cursor: pointer;
+      color: var(--text-muted); font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
-    .pdf-info { min-width: 0; flex: 1; }
-    .pdf-title { font-size: 13px; font-weight: 600; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pdf-meta { font-size: 11px; color: #64748b; margin-top: 2px; display: flex; align-items: center; gap: 8px; }
-    .tag-pdf { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.2); }
+    .view-btn.active { background: var(--bg-card-hover); color: var(--accent-color); border: 1px solid var(--border-accent); }
 
-    .btn-open {
-      font-size: 12px; font-weight: 600; color: #f8fafc; background: #0284c7; padding: 6px 14px;
-      border-radius: 6px; flex-shrink: 0; border: none; transition: background-color 0.2s; display: flex; align-items: center; gap: 6px;
+    /* Layout Estante Deluxe (Grid) */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
+    
+    .book-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;
+      display: flex; flex-direction: column; transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer; position: relative; overflow: hidden;
     }
-    .btn-open:hover { background: #0369a1; }
+    .book-card:hover {
+      transform: translateY(-6px); border-color: var(--accent-color);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
+    }
+    
+    .cover-container {
+      width: 100%; height: 240px; background: #04070d; border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--border-color); margin-bottom: 12px; position: relative;
+    }
+    .cover-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    .book-card:hover .cover-container img { transform: scale(1.03); }
 
-    /* Modo Grade Otimizado */
-    .pdf-container.grid-mode { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
-    .pdf-container.grid-mode .pdf-card { flex-direction: column; align-items: flex-start; justify-content: space-between; height: 130px; }
-    .pdf-container.grid-mode .list-left { width: 100%; flex-direction: column; align-items: flex-start; gap: 8px; }
-    .pdf-container.grid-mode .btn-open { width: 100%; justify-content: center; margin-top: 8px; }
+    .book-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .book-title { font-size: 13px; font-weight: 700; color: var(--text-main); line-height: 1.4; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .book-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--accent-color); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; display: inline-block; width: fit-content; border: 1px solid var(--border-accent); }
 
-    .pagination-wrapper { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
-    .page-btn {
-      background: #0f172a; border: 1px solid #1e293b; color: #94a3b8; padding: 6px 12px; min-width: 36px; height: 36px;
-      border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
-    }
-    .page-btn.active { background: #0284c7; color: #ffffff; border-color: #0284c7; font-weight: 700; }
-    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    /* Modulo Lista Compacta */
+    .catalog-grid.list-view { display: flex; flex-direction: column; gap: 10px; }
+    .catalog-grid.list-view .book-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 20px; }
+    .catalog-grid.list-view .cover-container { width: 42px; height: 56px; margin-bottom: 0; flex-shrink: 0; }
+    .catalog-grid.list-view .book-details { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-left: 16px; }
 
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-      background: rgba(8, 12, 20, 0.9); backdrop-filter: blur(4px); z-index: 999;
-      display: none; align-items: center; justify-content: center; padding: 12px;
+    /* Controles de Paginação */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 40px; }
+    .page-link {
+      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
+      width: 40px; height: 40px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
-    .modal-overlay.active { display: flex; }
-    .modal-content {
-      background: #0f172a; width: 100%; max-width: 1050px; height: 100%; max-height: 92dvh;
-      border-radius: 12px; border: 1px solid #1e293b; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    .page-link.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: 800; box-shadow: 0 0 12px var(--accent-glow); }
+    .page-link:hover:not(.active):not(:disabled) { border-color: var(--accent-color); color: var(--text-main); }
+    .page-link:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* Leitor Modal Integrado */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(3, 5, 9, 0.92); backdrop-filter: blur(8px);
+      z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px;
     }
-    .modal-header { padding: 10px 16px; background: #080c14; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .modal-header h3 { font-size: 13px; color: #f8fafc; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .modal-controls { display: flex; align-items: center; gap: 8px; }
-    .modal-close { background: transparent; border: none; font-size: 22px; color: #94a3b8; cursor: pointer; min-width: 36px; min-height: 36px; display: flex; align-items: center; justify-content: center; }
-    .modal-body { flex: 1; width: 100%; height: 100%; background: #000; position: relative; }
-    .modal-body iframe { width: 100%; height: 100%; border: none; }
+    .modal-backdrop.active { display: flex; }
+    .modal-window {
+      background: var(--bg-card); width: 100%; max-width: 1200px; height: 100%; max-height: 94dvh;
+      border-radius: 16px; border: 1px solid var(--border-accent); display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+    }
+    .modal-topbar { padding: 14px 24px; background: #070b12; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .modal-topbar h3 { font-size: 14px; font-weight: 700; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+    .modal-close-btn { background: transparent; border: none; font-size: 26px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+    .modal-close-btn:hover { color: var(--accent-color); }
+    .modal-frame-container { flex: 1; width: 100%; height: 100%; background: #000; }
+    .modal-frame-container iframe { width: 100%; height: 100%; border: none; }
 
     @media (max-width: 768px) {
-      .mobile-toggle { display: flex !important; }
-      .sidebar {
-        position: fixed !important; top: 0 !important; left: 0 !important;
-        height: 100dvh !important; width: 250px !important;
-        transform: translateX(-100%) !important;
-        z-index: 999 !important;
-      }
+      .sidebar { position: fixed !important; transform: translateX(-100%) !important; width: 260px !important; }
       .sidebar.open { transform: translateX(0) !important; }
-      .sidebar.open .logo-details .logo_name,
-      .sidebar.open li a .links_name { opacity: 1 !important; }
-      .home-section, .sidebar.open ~ .home-section {
-        margin-left: 0 !important; width: 100% !important; max-width: 100vw !important; padding: 12px !important;
-      }
-      .header-bar { padding: 10px 14px !important; margin-bottom: 12px !important; }
-      .modal-content { max-height: 100dvh !important; border-radius: 0 !important; }
-      .modal-overlay { padding: 0 !important; }
-      .pdf-container.grid-mode { grid-template-columns: 1fr !important; }
+      .sidebar.open .logo-name, .sidebar.open .nav-list a .link-name { opacity: 1 !important; }
+      .main-wrapper, .sidebar.open ~ .main-wrapper { margin-left: 0 !important; width: 100% !important; padding: 16px !important; }
+      .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; gap: 14px !important; }
+      .cover-container { height: 190px !important; }
+      .modal-window { max-height: 100dvh !important; border-radius: 0 !important; }
     }
   </style>
 </head>
@@ -155,266 +160,169 @@
 
   <nav class="sidebar" id="sidebar">
     <div class="logo-details">
-      <i class='bx bxs-shield-quarter icon'></i>
-      <div class="logo_name">LKSMILITAR</div>
-      <i class='bx bx-menu' id="btn" aria-label="Menu"></i>
+      <i class='bx bxs-terminal icon'></i>
+      <span class="logo-name">LKSMILITAR</span>
+      <i class='bx bx-menu-alt-left' id="btn-toggle"></i>
     </div>
 
     <div class="search-box">
       <i class='bx bx-search'></i>
-      <input type="text" id="search-input" placeholder="Buscar no acervo...">
+      <input type="text" id="search-input" placeholder="Filtrar por nome ou código...">
     </div>
 
-    <ul class="nav-list" id="menu-list"></ul>
+    <ul class="nav-list" id="menu-list">
+      <li>
+        <a class="active" data-catalog="collection-asas">
+          <i class='bx bxs-folder-open'></i>
+          <span class="link-name">Coleção Asas de Guerra</span>
+        </a>
+      </li>
+    </ul>
   </nav>
 
-  <main class="home-section">
-    <header class="header-bar">
-      <div class="header-left">
-        <button class="mobile-toggle" id="mobile-toggle-btn" aria-label="Abrir Menu">
-          <i class='bx bx-menu'></i>
-        </button>
-        <div class="header-title">
-          <h1 id="modulo-titulo">Coleção Asas de Guerra</h1>
-          <p id="modulo-subtitulo">Repositório técnico de edições e manuais táticos.</p>
-        </div>
+  <main class="main-wrapper">
+    <header class="top-header">
+      <div class="header-info">
+        <h1 id="collection-title"><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
+        <p id="collection-sub">Acervo técnico especializado carregado via catálogo dinâmico.</p>
       </div>
 
-      <div class="view-toggle">
-        <button class="toggle-btn active" id="btn-list" aria-label="Modo Lista"><i class='bx bx-list-ul'></i></button>
-        <button class="toggle-btn" id="btn-grid" aria-label="Modo Grade"><i class='bx bx-grid-alt'></i></button>
+      <div class="view-controls">
+        <button class="view-btn active" id="btn-grid-mode" title="Modo Estante"><i class='bx bx-grid-alt'></i></button>
+        <button class="view-btn" id="btn-list-mode" title="Modo Lista"><i class='bx bx-list-ul'></i></button>
       </div>
     </header>
 
-    <section id="pdf-container" class="pdf-container"></section>
-    <nav id="pagination-container" class="pagination-wrapper"></nav>
+    <section id="catalog-container" class="catalog-grid"></section>
+    <nav id="pagination-container" class="pagination"></nav>
   </main>
 
-  <div id="modal-viewer" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="modal-content">
-      <header class="modal-header">
-        <h3 id="modal-title">Documento</h3>
-        <div class="modal-controls">
-          <a id="modal-download" href="#" target="_blank" download class="btn-open" style="text-decoration:none; font-size:11px; padding: 4px 10px;">Baixar PDF</a>
-          <button class="modal-close" id="modal-close-btn" aria-label="Fechar Leitor">&times;</button>
-        </div>
+  <div id="modal-reader" class="modal-backdrop">
+    <div class="modal-window">
+      <header class="modal-topbar">
+        <h3 id="modal-doc-title">DOCUMENTO TÉCNICO</h3>
+        <button class="modal-close-btn" id="btn-close-modal">&times;</button>
       </header>
-      <div class="modal-body" id="modal-body-container"></div>
+      <div class="modal-frame-container" id="modal-frame-wrapper"></div>
     </div>
   </div>
 
   <script>
-    const R2_PUBLIC_BASE_URL = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev";
-    
-    const colecaoAsasArquivos = [
-      "Asas de Guerra (Planeta) - 01_text.pdf", "Asas de Guerra (Planeta) - 02_text.pdf",
-      "Asas de Guerra (Planeta) - 03_text.pdf", "Asas de Guerra (Planeta) - 04_text.pdf",
-      "Asas de Guerra (Planeta) - 05_text.pdf", "Asas de Guerra (Planeta) - 06_text.pdf",
-      "Asas de Guerra (Planeta) - 07_text.pdf", "Asas de Guerra (Planeta) - 08_text.pdf",
-      "Asas de Guerra (Planeta) - 09_text.pdf", "Asas de Guerra (Planeta) - 10_text.pdf",
-      "Asas de Guerra (Planeta) - 11_text.pdf", "Asas de Guerra (Planeta) - 12_text.pdf",
-      "Asas de Guerra (Planeta) - 13_text.pdf", "Asas de Guerra (Planeta) - 14_text.pdf",
-      "Asas de Guerra (Planeta) - 15_text.pdf", "Asas de Guerra (Planeta) - 16_text.pdf",
-      "Asas de Guerra (Planeta) - 17_text.pdf", "Asas de Guerra (Planeta) - 18_text.pdf",
-      "Asas de Guerra (Planeta) - 19_text.pdf", "Asas de Guerra (Planeta) - 20_text.pdf",
-      "Asas de Guerra (Planeta) - 21_text.pdf", "Asas de Guerra (Planeta) - 22_text.pdf",
-      "Asas de Guerra (Planeta) - 23_text.pdf", "Asas de Guerra (Planeta) - 24_text.pdf",
-      "Asas de Guerra (Planeta) - 25_text.pdf", "Asas de Guerra (Planeta) - 26_text.pdf",
-      "Asas de Guerra (Planeta) - 27_text.pdf", "Asas de Guerra (Planeta) - 28_text.pdf",
-      "Asas de Guerra (Planeta) - 29_text.pdf", "Asas de Guerra (Planeta) - 30_text.pdf",
-      "Asas de Guerra (Planeta) - 31_text.pdf", "Asas de Guerra (Planeta) - 32_text.pdf",
-      "Asas de Guerra (Planeta) - 33_text.pdf", "Asas de Guerra (Planeta) - 34_text.pdf",
-      "Asas de Guerra (Planeta) - 35_text.pdf", "Asas de Guerra (Planeta) - 36_text.pdf",
-      "Asas de Guerra (Planeta) - 37_text.pdf", "Asas de Guerra (Planeta) - 38_text.pdf",
-      "Asas de Guerra (Planeta) - 40_text.pdf", "Asas de Guerra (Planeta) - 41_text.pdf",
-      "Asas de Guerra (Planeta) - 42_text.pdf", "Asas de Guerra (Planeta) - 48_text.pdf",
-      "Asas de Guerra (Planeta) - 49_text.pdf", "Asas de Guerra (Planeta) - 51_text.pdf",
-      "Asas de Guerra (Planeta) - 54_text.pdf"
-    ];
+    const R2_CATALOG_URL = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev/collection-asas/catalog.json";
 
-    const modulos = [
-      { id: "collection-asas", nome: "Coleção Asas de Guerra", icon: "bx-folder", pastaR2: "collection-asas", lista: colecaoAsasArquivos },
-      { id: "testes-dtic", nome: "Testes DTIC", icon: "bx-microchip", pastaR2: "testes-dtic", lista: [] }
-    ];
+    let catalogData = [];
+    let filteredData = [];
+    let currentPage = 1;
+    const itemsPerPage = 12;
 
-    let listaCompletaPDFs = [];
-    let listaFiltradaPDFs = [];
-    let paginaAtual = 1;
-    const itensPorPagina = 10;
-    let moduloAtivo = "collection-asas";
-    let modalAberto = false;
-
+    const catalogContainer = document.getElementById('catalog-container');
+    const paginationContainer = document.getElementById('pagination-container');
+    const searchInput = document.getElementById('search-input');
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('backdrop');
-    const container = document.getElementById('pdf-container');
-    const searchInput = document.getElementById('search-input');
-    const mobileToggleBtn = document.getElementById('mobile-toggle-btn');
 
-    function renderizarMenu() {
-      const menuContainer = document.getElementById('menu-list');
-      menuContainer.innerHTML = '';
-      modulos.forEach(m => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a class="${m.id === moduloAtivo ? 'active' : ''}" data-id="${m.id}">
-            <i class='bx ${m.icon}'></i>
-            <span class="links_name">${m.nome}</span>
-          </a>
-        `;
-        li.querySelector('a').addEventListener('click', () => {
-          fecharMenuMobile();
-          carregarModulo(m.id);
-        });
-        menuContainer.appendChild(li);
-      });
+    async function loadCatalog() {
+      try {
+        catalogContainer.innerHTML = '<p style="color:var(--text-muted); font-size:14px; padding: 20px;">Conectando ao catálogo dinâmico no Cloudflare R2...</p>';
+        const response = await fetch(R2_CATALOG_URL);
+        
+        if (!response.ok) throw new Error("Não foi possível carregar o arquivo catalog.json");
+        
+        catalogData = await response.json();
+        filteredData = [...catalogData];
+        renderCurrentPage();
+      } catch (err) {
+        catalogContainer.innerHTML = `<p style="color:#ef4444; font-size:14px; padding: 20px;">Erro ao carregar o catálogo dinâmico: ${err.message}. Certifique-se de que o arquivo catalog.json foi enviado para o Cloudflare R2.</p>`;
+      }
     }
 
-    function fecharMenuMobile() {
-      sidebar.classList.remove('open');
-      backdrop.classList.remove('active');
-    }
-
-    function carregarModulo(idPasta) {
-      moduloAtivo = idPasta;
-      const mod = modulos.find(m => m.id === idPasta) || modulos[0];
-
-      document.getElementById('modulo-titulo').innerText = mod.nome;
-      document.getElementById('modulo-subtitulo').innerText = `Repositório técnico de edições e manuais de ${mod.nome}.`;
-
-      renderizarMenu();
-
-      listaCompletaPDFs = mod.lista.map(nomeArquivo => {
-        const urlArquivo = `${R2_PUBLIC_BASE_URL}/${mod.pastaR2}/${encodeURIComponent(nomeArquivo)}`;
-        const tituloLimpo = nomeArquivo.replace('_text.pdf', '').replace('.pdf', '');
-        return {
-          nome: tituloLimpo,
-          downloadUrl: urlArquivo
-        };
-      });
-
-      listaFiltradaPDFs = [...listaCompletaPDFs];
-      searchInput.value = '';
-      paginaAtual = 1;
-      renderizarPaginaAtual();
-    }
-
-    function renderizarPaginaAtual() {
-      container.innerHTML = '';
-      if (listaFiltradaPDFs.length === 0) {
-        container.innerHTML = '<p style="color:#64748b; font-size:13px; padding: 20px 0;">Nenhum documento encontrado neste módulo.</p>';
-        document.getElementById('pagination-container').innerHTML = '';
+    function renderCurrentPage() {
+      catalogContainer.innerHTML = '';
+      
+      if (filteredData.length === 0) {
+        catalogContainer.innerHTML = '<p style="color:var(--text-muted); font-size:14px; padding: 20px;">Nenhum documento localizado no acervo.</p>';
+        paginationContainer.innerHTML = '';
         return;
       }
 
-      const inicio = (paginaAtual - 1) * itensPorPagina;
-      const fim = paginaAtual * itensPorPagina;
-      const pdfsDaPagina = listaFiltradaPDFs.slice(inicio, fim);
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = currentPage * itemsPerPage;
+      const pageItems = filteredData.slice(start, end);
 
-      pdfsDaPagina.forEach((pdf) => {
+      pageItems.forEach(item => {
         const card = document.createElement('div');
-        card.className = 'pdf-card';
+        card.className = 'book-card';
         card.innerHTML = `
-          <div class="list-left">
-            <div class="doc-icon">
-              <i class='bx bxs-file-pdf'></i>
-            </div>
-            <div class="pdf-info">
-              <div class="pdf-title">${pdf.nome}</div>
-              <div class="pdf-meta">
-                <span class="tag-pdf">PDF</span>
-                <span>Documento Técnico</span>
-              </div>
-            </div>
+          <div class="cover-container">
+            <img src="${item.capa_url}" alt="Capa ${item.titulo}" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'%2338bdf8\'><path d=\'M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z\'/></svg>';">
           </div>
-          <button class="btn-open">Abrir <i class='bx bx-right-top-arrow-circle'></i></button>
+          <div class="book-details">
+            <div class="book-title">${item.titulo}</div>
+            <span class="book-badge">${item.formato || 'PDF'}</span>
+          </div>
         `;
-        card.addEventListener('click', () => abrirLeitorPDF(pdf.nome, pdf.downloadUrl));
-        container.appendChild(card);
+        card.addEventListener('click', () => openReader(item.titulo, item.pdf_url));
+        catalogContainer.appendChild(card);
       });
 
-      renderizarControlesPaginacao();
+      renderPagination();
     }
 
-    function renderizarControlesPaginacao() {
-      const containerPaginacao = document.getElementById('pagination-container');
-      const totalPaginas = Math.ceil(listaFiltradaPDFs.length / itensPorPagina);
-
-      if (totalPaginas <= 1) {
-        containerPaginacao.innerHTML = '';
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
         return;
       }
 
-      let html = `<button class="page-btn" ${paginaAtual === 1 ? 'disabled' : ''} onclick="mudarPagina(${paginaAtual - 1})"><i class='bx bx-chevron-left'></i></button>`;
-      for (let i = 1; i <= totalPaginas; i++) {
-        html += `<button class="page-btn ${i === paginaAtual ? 'active' : ''}" onclick="mudarPagina(${i})">${i}</button>`;
+      let html = `<button class="page-link" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})"><i class='bx bx-chevron-left'></i></button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-link ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
       }
-      html += `<button class="page-btn" ${paginaAtual === totalPaginas ? 'disabled' : ''} onclick="mudarPagina(${paginaAtual + 1})"><i class='bx bx-chevron-right'></i></button>`;
+      html += `<button class="page-link" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})"><i class='bx bx-chevron-right'></i></button>`;
 
-      containerPaginacao.innerHTML = html;
+      paginationContainer.innerHTML = html;
     }
 
-    function mudarPagina(novaPagina) {
-      paginaAtual = novaPagina;
-      renderizarPaginaAtual();
-      window.scrollTo({ top: 0, behavior: 'instant' });
+    function changePage(page) {
+      currentPage = page;
+      renderCurrentPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function abrirLeitorPDF(nome, downloadUrl) {
-      modalAberto = true;
-      document.getElementById('modal-title').innerText = nome;
-      document.getElementById('modal-download').href = downloadUrl;
-      
-      const bodyContainer = document.getElementById('modal-body-container');
-      bodyContainer.innerHTML = `<iframe src="${downloadUrl}" width="100%" height="100%"></iframe>`;
-      
-      document.getElementById('modal-viewer').classList.add('active');
+    function openReader(title, pdfUrl) {
+      document.getElementById('modal-doc-title').innerText = title;
+      document.getElementById('modal-frame-wrapper').innerHTML = `<iframe src="${pdfUrl}"></iframe>`;
+      document.getElementById('modal-reader').classList.add('active');
     }
 
-    function fecharLeitorPDF() {
-      modalAberto = false;
-      document.getElementById('modal-body-container').innerHTML = '';
-      document.getElementById('modal-viewer').classList.remove('active');
+    function closeReader() {
+      document.getElementById('modal-frame-wrapper').innerHTML = '';
+      document.getElementById('modal-reader').classList.remove('active');
     }
 
-    document.getElementById('modal-close-btn').addEventListener('click', fecharLeitorPDF);
-
-    window.addEventListener('keyup', (e) => {
-      if (e.key === 'Escape' && modalAberto) fecharLeitorPDF();
-    });
+    document.getElementById('btn-close-modal').addEventListener('click', closeReader);
 
     searchInput.addEventListener('input', (e) => {
-      const termo = e.target.value.toLowerCase().trim();
-      listaFiltradaPDFs = listaCompletaPDFs.filter(pdf => pdf.nome.toLowerCase().includes(termo));
-      paginaAtual = 1;
-      renderizarPaginaAtual();
+      const query = e.target.value.toLowerCase().trim();
+      filteredData = catalogData.filter(item => item.titulo.toLowerCase().includes(query));
+      currentPage = 1;
+      renderCurrentPage();
     });
 
-    function alternarMenu() {
-      sidebar.classList.toggle('open');
-      if (window.innerWidth <= 768) {
-        backdrop.classList.toggle('active', sidebar.classList.contains('open'));
-      }
-    }
-
-    document.getElementById('btn').addEventListener('click', alternarMenu);
-    if (mobileToggleBtn) mobileToggleBtn.addEventListener('click', alternarMenu);
-    backdrop.addEventListener('click', fecharMenuMobile);
-
-    document.getElementById('btn-grid').addEventListener('click', function() {
+    document.getElementById('btn-toggle').addEventListener('click', () => sidebar.classList.toggle('open'));
+    document.getElementById('btn-grid-mode').addEventListener('click', function() {
       this.classList.add('active');
-      document.getElementById('btn-list').classList.remove('active');
-      container.className = 'pdf-container grid-mode';
+      document.getElementById('btn-list-mode').classList.remove('active');
+      catalogContainer.className = 'catalog-grid';
     });
-
-    document.getElementById('btn-list').addEventListener('click', function() {
+    document.getElementById('btn-list-mode').addEventListener('click', function() {
       this.classList.add('active');
-      document.getElementById('btn-grid').classList.remove('active');
-      container.className = 'pdf-container';
+      document.getElementById('btn-grid-mode').classList.remove('active');
+      catalogContainer.className = 'catalog-grid list-view';
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      carregarModulo('collection-asas');
-    });
+    document.addEventListener('DOMContentLoaded', loadCatalog);
   </script>
 </body>
 </html>
