@@ -29,19 +29,19 @@
       pointer-events: none; z-index: 0;
     }
 
+    /* Sidebar Mobile Fix */
     .sidebar {
-      position: fixed; top: 0; left: 0; height: 100dvh; width: 80px;
+      position: fixed; top: 0; left: 0; height: 100dvh; width: 280px;
       background: #090e17; border-right: 1px solid var(--border-color);
-      padding: 16px 12px; z-index: 99; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 16px 12px; z-index: 999; transition: transform 0.3s ease;
       display: flex; flex-direction: column; backdrop-filter: blur(10px);
     }
-    .sidebar.open { width: 280px; }
     
-    .logo-details { height: 50px; display: flex; align-items: center; position: relative; margin-bottom: 20px; }
-    .logo-details i.icon { color: var(--accent-color); font-size: 26px; min-width: 56px; text-align: center; filter: drop-shadow(0 0 8px var(--accent-glow)); }
-    .logo-name { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 1px; opacity: 0; transition: 0.2s; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
-    .sidebar.open .logo-name { opacity: 1; }
-    .logo-details #btn-toggle { position: absolute; right: 0; font-size: 22px; color: var(--text-muted); cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .logo-details { height: 50px; display: flex; align-items: center; justify-content: space-between; position: relative; margin-bottom: 20px; padding: 0 8px; }
+    .logo-left { display: flex; align-items: center; gap: 10px; }
+    .logo-details i.icon { color: var(--accent-color); font-size: 26px; }
+    .logo-name { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
+    .logo-details #btn-close-sidebar { font-size: 24px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
     .search-box { position: relative; margin-bottom: 16px; }
     .search-box input {
@@ -54,96 +54,110 @@
 
     .nav-list { flex: 1; overflow-y: auto; list-style: none; }
     .nav-list li { margin-bottom: 6px; }
-    .nav-list a { display: flex; height: 44px; border-radius: 8px; align-items: center; text-decoration: none; transition: 0.2s; cursor: pointer; border: 1px solid transparent; }
+    .nav-list a { display: flex; height: 44px; border-radius: 8px; align-items: center; text-decoration: none; transition: 0.2s; cursor: pointer; border: 1px solid transparent; padding: 0 12px; gap: 12px; }
     .nav-list a:hover, .nav-list a.active { background: var(--bg-card-hover); border-color: var(--border-accent); }
-    .nav-list a i { height: 44px; min-width: 56px; font-size: 20px; text-align: center; line-height: 44px; color: var(--accent-color); }
-    .nav-list a .link-name { color: #cbd5e1; font-size: 13px; font-weight: 600; opacity: 0; white-space: nowrap; transition: 0.2s; }
-    .sidebar.open .nav-list a .link-name { opacity: 1; }
+    .nav-list a i { font-size: 20px; color: var(--accent-color); }
+    .nav-list a .link-name { color: #cbd5e1; font-size: 13px; font-weight: 600; white-space: nowrap; }
 
-    .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 98; opacity: 0; pointer-events: none; transition: 0.3s; }
+    .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 998; opacity: 0; pointer-events: none; transition: 0.3s; }
     .sidebar-backdrop.active { opacity: 1; pointer-events: auto; }
 
-    .main-wrapper { margin-left: 80px; padding: 28px 36px; transition: margin-left 0.3s; width: calc(100% - 80px); position: relative; z-index: 1; }
-    .sidebar.open ~ .main-wrapper { margin-left: 280px; width: calc(100% - 280px); }
+    /* Area Principal */
+    .main-wrapper { margin-left: 0; padding: 16px; width: 100%; position: relative; z-index: 1; }
 
     .top-header {
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-      margin-bottom: 28px; background: var(--bg-card); padding: 18px 26px; border-radius: 12px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 20px; background: var(--bg-card); padding: 14px 18px; border-radius: 12px;
       border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-    .header-info h1 { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; color: #fff; display: flex; align-items: center; gap: 10px; }
-    .header-info p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .header-left-group { display: flex; align-items: center; gap: 12px; }
+    .btn-open-sidebar {
+      background: #05080f; border: 1px solid var(--border-color); color: var(--accent-color);
+      width: 40px; height: 40px; border-radius: 8px; font-size: 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .btn-open-sidebar:hover { border-color: var(--accent-color); }
+
+    .header-info h1 { font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .header-info p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
     
-    .view-controls { display: flex; gap: 6px; background: #05080f; padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .view-controls { display: flex; gap: 4px; background: #05080f; padding: 3px; border-radius: 8px; border: 1px solid var(--border-color); }
     .view-btn {
-      border: none; background: transparent; padding: 8px 14px; border-radius: 6px; cursor: pointer;
-      color: var(--text-muted); font-size: 18px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+      border: none; background: transparent; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+      color: var(--text-muted); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
     .view-btn.active { background: var(--bg-card-hover); color: var(--accent-color); border: 1px solid var(--border-accent); }
 
-    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
+    /* Estante Grid */
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
     
     .book-card {
-      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;
-      display: flex; flex-direction: column; transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;
+      display: flex; flex-direction: column; transition: transform 0.25s ease, border-color 0.25s ease;
       cursor: pointer; position: relative; overflow: hidden;
     }
-    .book-card:hover {
-      transform: translateY(-6px); border-color: var(--accent-color);
-      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
-    }
+    .book-card:hover { transform: translateY(-4px); border-color: var(--accent-color); }
     
     .cover-container {
-      width: 100%; height: 240px; background: #04070d; border-radius: 8px; overflow: hidden;
-      border: 1px solid var(--border-color); margin-bottom: 12px; position: relative;
+      width: 100%; height: 190px; background: #04070d; border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--border-color); margin-bottom: 8px; position: relative;
+      display: flex; align-items: center; justify-content: center;
     }
-    .cover-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-    .book-card:hover .cover-container img { transform: scale(1.03); }
+    .cover-container img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* Card Fallback (Quando não tem imagem) */
+    .fallback-cover {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 12px; text-align: center; width: 100%; height: 100%; background: #070c16;
+    }
+    .fallback-cover i { font-size: 36px; color: var(--accent-color); }
+    .fallback-cover span { font-size: 11px; font-weight: 700; color: #cbd5e1; line-height: 1.2; }
 
     .book-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .book-title { font-size: 13px; font-weight: 700; color: var(--text-main); line-height: 1.4; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .book-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--accent-color); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; display: inline-block; width: fit-content; border: 1px solid var(--border-accent); }
+    .book-title { font-size: 12px; font-weight: 700; color: var(--text-main); line-height: 1.3; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .book-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--accent-color); background: var(--accent-glow); padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; border: 1px solid var(--border-accent); }
 
-    .catalog-grid.list-view { display: flex; flex-direction: column; gap: 10px; }
-    .catalog-grid.list-view .book-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 20px; }
-    .catalog-grid.list-view .cover-container { width: 42px; height: 56px; margin-bottom: 0; flex-shrink: 0; }
-    .catalog-grid.list-view .book-details { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-left: 16px; }
+    /* Modulo Lista */
+    .catalog-grid.list-view { display: flex; flex-direction: column; gap: 8px; }
+    .catalog-grid.list-view .book-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 14px; }
+    .catalog-grid.list-view .cover-container { width: 36px; height: 48px; margin-bottom: 0; flex-shrink: 0; }
+    .catalog-grid.list-view .book-details { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-left: 12px; }
 
-    .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 40px; }
+    /* Paginação */
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 28px; }
     .page-link {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
-      width: 40px; height: 40px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
       display: flex; align-items: center; justify-content: center; transition: 0.2s;
     }
-    .page-link.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: 800; box-shadow: 0 0 12px var(--accent-glow); }
-    .page-link:hover:not(.active):not(:disabled) { border-color: var(--accent-color); color: var(--text-main); }
+    .page-link.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: 800; }
     .page-link:disabled { opacity: 0.3; cursor: not-allowed; }
 
+    /* Modal */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(3, 5, 9, 0.92); backdrop-filter: blur(8px);
-      z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px;
+      z-index: 999; display: none; align-items: center; justify-content: center; padding: 10px;
     }
     .modal-backdrop.active { display: flex; }
     .modal-window {
-      background: var(--bg-card); width: 100%; max-width: 1200px; height: 100%; max-height: 94dvh;
-      border-radius: 16px; border: 1px solid var(--border-accent); display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+      background: var(--bg-card); width: 100%; max-width: 1200px; height: 100%; max-height: 96dvh;
+      border-radius: 12px; border: 1px solid var(--border-accent); display: flex; flex-direction: column; overflow: hidden;
     }
-    .modal-topbar { padding: 14px 24px; background: #070b12; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .modal-topbar h3 { font-size: 14px; font-weight: 700; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
-    .modal-close-btn { background: transparent; border: none; font-size: 26px; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-    .modal-close-btn:hover { color: var(--accent-color); }
+    .modal-topbar { padding: 12px 16px; background: #070b12; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .modal-topbar h3 { font-size: 13px; font-weight: 700; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+    .modal-close-btn { background: transparent; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
     .modal-frame-container { flex: 1; width: 100%; height: 100%; background: #000; }
     .modal-frame-container iframe { width: 100%; height: 100%; border: none; }
 
-    @media (max-width: 768px) {
-      .sidebar { position: fixed !important; transform: translateX(-100%) !important; width: 260px !important; }
-      .sidebar.open { transform: translateX(0) !important; }
-      .sidebar.open .logo-name, .sidebar.open .nav-list a .link-name { opacity: 1 !important; }
-      .main-wrapper, .sidebar.open ~ .main-wrapper { margin-left: 0 !important; width: 100% !important; padding: 16px !important; }
-      .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; gap: 14px !important; }
-      .cover-container { height: 190px !important; }
-      .modal-window { max-height: 100dvh !important; border-radius: 0 !important; }
+    /* Oculta Sidebar por Padrão em Telas Menores */
+    @media (max-width: 1024px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+    }
+    @media (min-width: 1025px) {
+      .main-wrapper { margin-left: 280px; width: calc(100% - 280px); }
+      .btn-open-sidebar { display: none; }
+      .sidebar { transform: translateX(0); }
     }
   </style>
 </head>
@@ -153,17 +167,19 @@
 
   <nav class="sidebar" id="sidebar">
     <div class="logo-details">
-      <i class='bx bxs-terminal icon'></i>
-      <span class="logo-name">LKSMILITAR</span>
-      <i class='bx bx-menu-alt-left' id="btn-toggle"></i>
+      <div class="logo-left">
+        <i class='bx bxs-terminal icon'></i>
+        <span class="logo-name">LKSMILITAR</span>
+      </div>
+      <i class='bx bx-x' id="btn-close-sidebar"></i>
     </div>
 
     <div class="search-box">
       <i class='bx bx-search'></i>
-      <input type="text" id="search-input" placeholder="Filtrar edições...">
+      <input type="text" id="search-input" placeholder="Buscar edição...">
     </div>
 
-    <ul class="nav-list" id="menu-list">
+    <ul class="nav-list">
       <li>
         <a class="active">
           <i class='bx bxs-folder-open'></i>
@@ -175,9 +191,14 @@
 
   <main class="main-wrapper">
     <header class="top-header">
-      <div class="header-info">
-        <h1><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
-        <p>Acervo técnico especializado de edições e manuais táticos.</p>
+      <div class="header-left-group">
+        <button class="btn-open-sidebar" id="btn-open-sidebar" aria-label="Abrir Menu">
+          <i class='bx bx-menu'></i>
+        </button>
+        <div class="header-info">
+          <h1><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
+          <p>Acervo técnico especializado em aviação militar.</p>
+        </div>
       </div>
 
       <div class="view-controls">
@@ -234,6 +255,7 @@
       const imgName = baseName + ".jpg";
       const num = baseName.split("-").pop().trim();
       return {
+        numEdicao: num,
         titulo: `Asas de Guerra - Edição ${num}`,
         pdf_url: `${R2_BASE}/${encodeURIComponent(file)}`,
         capa_url: `${R2_BASE}/${encodeURIComponent(imgName)}`,
@@ -249,12 +271,13 @@
     const paginationContainer = document.getElementById('pagination-container');
     const searchInput = document.getElementById('search-input');
     const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('backdrop');
 
     function renderCurrentPage() {
       catalogContainer.innerHTML = '';
       
       if (filteredData.length === 0) {
-        catalogContainer.innerHTML = '<p style="color:var(--text-muted); font-size:14px; padding: 20px;">Nenhum documento localizado no acervo.</p>';
+        catalogContainer.innerHTML = '<p style="color:var(--text-muted); font-size:13px; padding: 20px;">Nenhum documento localizado.</p>';
         paginationContainer.innerHTML = '';
         return;
       }
@@ -266,9 +289,15 @@
       pageItems.forEach(item => {
         const card = document.createElement('div');
         card.className = 'book-card';
+        
         card.innerHTML = `
           <div class="cover-container">
-            <img src="${item.capa_url}" alt="${item.titulo}" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'%2338bdf8\'><path d=\'M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z\'/></svg>';">
+            <img src="${item.capa_url}" alt="${item.titulo}" loading="lazy" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="fallback-cover" style="display:none;">
+              <i class='bx bxs-file-pdf'></i>
+              <span>EDIÇÃO ${item.numEdicao}</span>
+            </div>
           </div>
           <div class="book-details">
             <div class="book-title">${item.titulo}</div>
@@ -315,6 +344,14 @@
       document.getElementById('modal-reader').classList.remove('active');
     }
 
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    }
+
+    document.getElementById('btn-open-sidebar').addEventListener('click', toggleSidebar);
+    document.getElementById('btn-close-sidebar').addEventListener('click', toggleSidebar);
+    backdrop.addEventListener('click', toggleSidebar);
     document.getElementById('btn-close-modal').addEventListener('click', closeReader);
 
     searchInput.addEventListener('input', (e) => {
@@ -324,7 +361,6 @@
       renderCurrentPage();
     });
 
-    document.getElementById('btn-toggle').addEventListener('click', () => sidebar.classList.toggle('open'));
     document.getElementById('btn-grid-mode').addEventListener('click', function() {
       this.classList.add('active');
       document.getElementById('btn-list-mode').classList.remove('active');
