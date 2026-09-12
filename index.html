@@ -168,7 +168,7 @@
 
     <div class="search-box">
       <i class='bx bx-search'></i>
-      <input type="text" id="search-input" placeholder="Buscar edição...">
+      <input type="text" id="search-input" placeholder="Buscar no acervo...">
     </div>
 
     <ul class="nav-list" id="menu-list"></ul>
@@ -181,8 +181,8 @@
           <i class='bx bx-menu'></i>
         </button>
         <div class="header-info">
-          <h1 id="modulo-titulo"><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
-          <p id="modulo-subtitulo">Acervo técnico especializado em aviação militar.</p>
+          <h1 id="modulo-titulo"><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Eletrodinâmica & Radar</h1>
+          <p id="modulo-subtitulo">Tratados teóricos, eletromagnetismo clássico e equações fundamentais.</p>
         </div>
       </div>
 
@@ -209,6 +209,7 @@
   <script>
     const R2_BASE = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev";
     
+    // 1. Coleção Asas de Guerra
     const colecaoAsasArquivos = [
       "Asas de Guerra (Planeta) - 01_text.pdf", "Asas de Guerra (Planeta) - 02_text.pdf",
       "Asas de Guerra (Planeta) - 03_text.pdf", "Asas de Guerra (Planeta) - 04_text.pdf",
@@ -235,18 +236,87 @@
       "Asas de Guerra (Planeta) - 54_text.pdf"
     ];
 
+    // 2. Coleção Osprey
     const colecaoOspreyArquivos = [
       "01_Osprey.pdf", "02_Osprey.pdf", "03_Osprey.pdf", "04_Osprey.pdf", "05_Osprey.pdf",
       "06_Osprey.pdf", "07_Osprey.pdf", "08_Osprey.pdf", "09_Osprey.pdf", "10_Osprey.pdf"
     ];
 
+    // 3. Eletrodinâmica & Maxwell (Hierarquia Priorizada)
+    const eletrodinamicaOrdenada = [
+      // 1º LUGAR: Obras Fundamentais de James Clerk Maxwell
+      { pdf: "maxwell_electricity_magnetism_vol1.pdf", titulo: "Maxwell - Treatise on Electricity and Magnetism (Vol 1)", badge: "OBRA-PRIMA" },
+      { pdf: "maxwell_scientific_papers_vol1.pdf", titulo: "Maxwell - Scientific Papers (Volume 1)", badge: "FUNDAMENTAL" },
+      { pdf: "maxwell_scientific_papers_vol2.pdf", titulo: "Maxwell - Scientific Papers (Volume 2)", badge: "FUNDAMENTAL" },
+
+      // 2º LUGAR: Obras em Português
+      { pdf: "moyses_nussenzveig_fisica_3.pdf", titulo: "Moysés Nussenzveig - Curso de Física Básica Vol 3 (Eletromagnetismo)", badge: "PORTUGUÊS" },
+      { pdf: "moyses_nussenzveig_fisica_2.pdf", titulo: "Moysés Nussenzveig - Curso de Física Básica Vol 2 (Ondas e Calor)", badge: "PORTUGUÊS" },
+      { pdf: "halliday_fisica_3_eletromagnetismo.pdf", titulo: "Halliday & Resnick - Física 3: Eletromagnetismo", badge: "PORTUGUÊS" },
+      { pdf: "hayt_eletromagnetismo_8ed.pdf", titulo: "Hayt & Buck - Eletromagnetismo (8ª Edição)", badge: "PORTUGUÊS" },
+      { pdf: "eletromagnetico.pdf", titulo: "Tratado de Eletromagnetismo", badge: "PORTUGUÊS" },
+      { pdf: "bredov_electrodinamica_clasica.pdf", titulo: "Brédov, Rumiántsev & Toptiguin - Electrodinámica Clásica", badge: "TRADUÇÃO PT/ES" },
+      { pdf: "bredov_electrodinamica_clasica_alt.pdf", titulo: "Brédov et al. - Electrodinámica Clásica (Texto Edição Especial)", badge: "TRADUÇÃO PT/ES" },
+      { pdf: "nikolski_electrodinamica_ondas_radio.pdf", titulo: "Nikolski - Electrodinámica y Propagación de Ondas de Radio", badge: "TRADUÇÃO PT/ES" },
+
+      // 3º LUGAR: Tratados Avançados de Engenharia, Radar e Eletrodinâmica Clássica
+      { pdf: "jackson_classical_electrodynamics_3ed.pdf", titulo: "J.D. Jackson - Classical Electrodynamics (3rd Edition)", badge: "REFERÊNCIA" },
+      { pdf: "skolnik_introduction_to_radar_systems.pdf", titulo: "Merrill I. Skolnik - Introduction to Radar Systems", badge: "RADAR STANDARD" },
+      { pdf: "ufimtsev_method_of_edge_waves.pdf", titulo: "Pyotr Ufimtsev - Method of Edge Waves in Physical Theory of Diffraction", badge: "STEALTH/RCS" },
+      { pdf: "electronic_warfare_fundamentals.pdf", titulo: "USAF - Electronic Warfare Fundamentals", badge: "EW / GUERRA ELETRÔNICA" },
+      { pdf: "electromagnetics_and_radar.pdf", titulo: "Electromagnetics and Radar Engineering", badge: "RADAR" },
+      { pdf: "schwinger_classical_electrodynamics_2ed.pdf", titulo: "Julian Schwinger - Classical Electrodynamics (2nd Ed)", badge: "AVANÇADO" },
+      { pdf: "zangwill_modern_electrodynamics.pdf", titulo: "Andrew Zangwill - Modern Electrodynamics", badge: "TEORIA CLÁSSICA" },
+      { pdf: "irodov_basic_laws_electromagnetism.pdf", titulo: "I.E. Irodov - Basic Laws of Electromagnetism", badge: "FÍSICA RUSSA" },
+
+      // 4º LUGAR: Manuais Acadêmicos e Eletrodinâmica Aplicada
+      { pdf: "fiodorov_fundamentos_electrodinamica.pdf", titulo: "N.N. Fiódorov - Fundamentos de Electrodinámica", badge: "ESCOLA RUSSA" },
+      { pdf: "alexeiev_problemas_electrodinamica.pdf", titulo: "A.I. Alexeiev - Problemas de Electrodinámica Clásica", badge: "EXERCÍCIOS" },
+      { pdf: "turov_magnetically_ordered_crystals.pdf", titulo: "E.A. Turov - Physical Properties of Magnetically Ordered Crystals", badge: "FÍSICA DE MATERIAIS" },
+      { pdf: "kuznetsov_electrical_engineering.pdf", titulo: "M. Kuznetsov - Fundamentals of Electrical Engineering (Mir)", badge: "MIR PUBLISHERS" },
+      { pdf: "novozhilov_yappa_electrodynamics.pdf", titulo: "Novozhilov & Yappa - Electrodynamics", badge: "TEORIA CLÁSSICA" },
+      { pdf: "tamm_fundamentals_theory_electricity.pdf", titulo: "I.E. Tamm - Fundamentals of the Theory of Electricity", badge: "NOBEL PRIZE" },
+      { pdf: "parthasarathy_electromagnetic_field_theory.pdf", titulo: "H. Parthasarathy - Electromagnetic Field Theory", badge: "ACADÊMICO" },
+      { pdf: "muller_kirsten_electrodynamics.pdf", titulo: "Harald J.W. Müller-Kirsten - Electrodynamics & Quantum Effects", badge: "QUÂNTICA" },
+      { pdf: "schwichtenberg_no_nonsense_electrodynamics.pdf", titulo: "J. Schwichtenberg - No-Nonsense Electrodynamics", badge: "MODERNO" },
+      { pdf: "fliessbach_electrodynamics_physicists.pdf", titulo: "T. Fliessbach - Electrodynamics for Physicists", badge: "ALEMÃO" },
+      { pdf: "abdesselam_classical_electrodynamics.pdf", titulo: "B. Abdesselam - Introduction to Classical Electrodynamics (2025)", badge: "RECENTE" },
+      { pdf: "rojansky_electromagnetic_fields_waves.pdf", titulo: "V. Rojansky - Electromagnetic Fields and Waves", badge: "DOVER" },
+
+      // 5º LUGAR: Manuais Complementares e Secundários
+      { pdf: "electromagnetics.pdf", titulo: "Electromagnetics General Treatise", badge: "COMPLEMENTAR" },
+      { pdf: "electrodynamics_intensive_course.pdf", titulo: "Electrodynamics - An Intensive Course", badge: "RESUMO" },
+      { pdf: "prakash_electromagnetic_theory.pdf", titulo: "Satya Prakash - Electromagnetic Theory and Electrodynamics", badge: "COMPLEMENTAR" },
+      { pdf: "leek_classical_electrodynamics_guide.pdf", titulo: "M. Leek - Classical Electrodynamics Guide (2025)", badge: "GUIA" },
+      { pdf: "upadhyaya_mechanics_waves_oscillations.pdf", titulo: "J.C. Upadhyaya - Mechanics, Waves and Oscillations", badge: "ONDAS" },
+      { pdf: "upadhyaya_university_physics_1_2.pdf", titulo: "J.C. Upadhyaya - University Physics I and II", badge: "GERAL" },
+      { pdf: "abbott_ordinary_level_physics.pdf", titulo: "A. Abbott - Ordinary Level Physics", badge: "BÁSICO" },
+      { pdf: "brewster_electromagnetism.pdf", titulo: "Hilary D. Brewster - Electromagnetism", badge: "COMPLEMENTAR" },
+      { pdf: "thron_macroscopic_electrodynamics.pdf", titulo: "C. Thron - Macroscopic Electrodynamics (2024)", badge: "AVANÇADO" },
+      { pdf: "classical_electrodynamics_indian.pdf", titulo: "Classical Electrodynamics (Indian Edition)", badge: "ACADÊMICO" },
+      { pdf: "zangwill_modern_electrodynamics_solutions.pdf", titulo: "A. Zangwill - Solutions Manual for Modern Electrodynamics", badge: "GABARITO" },
+      { pdf: "spectrum_amplitude_analysis.pdf", titulo: "Spectrum Amplitude Analysis in Electromagnetics", badge: "ESPECIALIZADO" },
+      { pdf: "kuznetsov_electrical_engineering_compressed.pdf", titulo: "M. Kuznetsov - Fundamentals of Electrical Eng (Compressed)", badge: "CÓPIA LEVE" },
+      { pdf: "schwinger_classical_electrodynamics_alt.pdf", titulo: "Julian Schwinger - Classical Electrodynamics (Alt Copy)", badge: "CÓPIA ALT" }
+    ];
+
     const modulos = [
+      { 
+        id: "eletrodinamica", 
+        nome: "Eletrodinâmica & Maxwell", 
+        subtitulo: "Tratados teóricos, eletromagnetismo clássico e equações fundamentais.",
+        icon: "bxs-microchip", 
+        pastaR2: "eletrodinamica", 
+        tipo: "custom",
+        dados: eletrodinamicaOrdenada
+      },
       { 
         id: "collection-asas", 
         nome: "Coleção Asas de Guerra", 
         subtitulo: "Acervo técnico especializado em aviação militar.",
         icon: "bxs-folder-open", 
         pastaR2: "collection-asas", 
+        tipo: "lista",
         lista: colecaoAsasArquivos,
         prefixoTitulo: "Asas de Guerra - Edição "
       },
@@ -256,12 +326,13 @@
         subtitulo: "Monografias e manuais de sistemas de armas e aeronaves.",
         icon: "bxs-book-alt", 
         pastaR2: "collection-osprey", 
+        tipo: "lista",
         lista: colecaoOspreyArquivos,
         prefixoTitulo: "Osprey Edition - Volume "
       }
     ];
 
-    let moduloAtivo = "collection-asas";
+    let moduloAtivo = "eletrodinamica";
     let catalogData = [];
     let filteredData = [];
     let currentPage = 1;
@@ -301,19 +372,36 @@
 
       renderizarMenu();
 
-      catalogData = mod.lista.map(file => {
-        const imgName = file.replace(".pdf", ".jpg");
-        const baseName = file.replace("_text.pdf", "").replace(".pdf", "").replace("_Osprey", "");
-        const num = baseName.split("-").pop().replace("_", "").trim();
-        
-        return {
-          numEdicao: num,
-          titulo: `${mod.prefixoTitulo}${num}`,
-          pdf_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(file)}`,
-          capa_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(imgName)}`,
-          formato: "PDF"
-        };
-      });
+      if (mod.tipo === "custom") {
+        catalogData = mod.dados.map(item => {
+          const baseName = item.pdf.replace(".pdf", "");
+          const capaNome = `${baseName}-001.jpg`;
+          const capaAlt = `${baseName}-01.jpg`;
+          const capaClean = `${baseName}.jpg`;
+
+          return {
+            titulo: item.titulo,
+            pdf_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(item.pdf)}`,
+            capa_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(capaNome)}`,
+            capa_alt: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(capaAlt)}`,
+            capa_clean: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(capaClean)}`,
+            formato: item.badge || "PDF"
+          };
+        });
+      } else {
+        catalogData = mod.lista.map(file => {
+          const imgName = file.replace(".pdf", ".jpg");
+          const baseName = file.replace("_text.pdf", "").replace(".pdf", "").replace("_Osprey", "");
+          const num = baseName.split("-").pop().replace("_", "").trim();
+          
+          return {
+            titulo: `${mod.prefixoTitulo}${num}`,
+            pdf_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(file)}`,
+            capa_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(imgName)}`,
+            formato: "PDF"
+          };
+        });
+      }
 
       filteredData = [...catalogData];
       searchInput.value = '';
@@ -341,10 +429,10 @@
         card.innerHTML = `
           <div class="cover-container">
             <img src="${item.capa_url}" alt="${item.titulo}" loading="lazy" 
-                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                 onerror="if (!this.dataset.triedAlt) { this.dataset.triedAlt='1'; this.src='${item.capa_alt || ''}'; } else if (!this.dataset.triedClean) { this.dataset.triedClean='1'; this.src='${item.capa_clean || ''}'; } else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
             <div class="fallback-cover" style="display:none;">
               <i class='bx bxs-file-pdf'></i>
-              <span>VOL. ${item.numEdicao}</span>
+              <span>${item.formato}</span>
             </div>
           </div>
           <div class="book-details">
@@ -421,7 +509,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-      carregarModulo('collection-asas');
+      carregarModulo('eletrodinamica');
     });
   </script>
 </body>
