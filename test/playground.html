@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" media="screen" href="../build/wunderbaum.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" /> -->
+    <style>
+        html,
+        body {
+            height: 100%
+        }
+
+        div.wunderbaum {
+            height: 80%;
+            width: 1024px;
+        }
+    </style>
+
+    <script defer type="module" src="playground.js"></script>
+</head>
+
+<body>
+    <button class="demo-btn" data-action="toggleEnable">Enable</button>
+    <button class="demo-btn" data-action="expandAll">Expand</button>
+    <button class="demo-btn" data-action="collapseAll">Collapse</button>
+    <button class="demo-btn" data-action="test1">Test 1</button>
+    <div id="tree" class="wb-no-select-NOT">
+    </div>
+</body>
+
+</html>
