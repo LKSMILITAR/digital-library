@@ -29,7 +29,7 @@
       pointer-events: none; z-index: 0;
     }
 
-    /* Sidebar Mobile Fix */
+    /* Sidebar Mobile & Desktop */
     .sidebar {
       position: fixed; top: 0; left: 0; height: 100dvh; width: 280px;
       background: #090e17; border-right: 1px solid var(--border-color);
@@ -105,7 +105,6 @@
     }
     .cover-container img { width: 100%; height: 100%; object-fit: cover; }
     
-    /* Card Fallback (Quando não tem imagem) */
     .fallback-cover {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 8px; padding: 12px; text-align: center; width: 100%; height: 100%; background: #070c16;
@@ -149,7 +148,6 @@
     .modal-frame-container { flex: 1; width: 100%; height: 100%; background: #000; }
     .modal-frame-container iframe { width: 100%; height: 100%; border: none; }
 
-    /* Oculta Sidebar por Padrão em Telas Menores */
     @media (max-width: 1024px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
@@ -251,9 +249,10 @@
     ];
 
     const catalogData = arquivosList.map(file => {
+      const imgName = file.replace(".pdf", ".jpg"); // Ex: Asas de Guerra (Planeta) - 54_text.jpg
       const baseName = file.replace("_text.pdf", "").replace(".pdf", "");
-      const imgName = baseName + ".jpg";
       const num = baseName.split("-").pop().trim();
+      
       return {
         numEdicao: num,
         titulo: `Asas de Guerra - Edição ${num}`,
