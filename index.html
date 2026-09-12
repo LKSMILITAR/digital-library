@@ -23,14 +23,12 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
     html, body { width: 100%; min-height: 100dvh; background: var(--bg-main); color: var(--text-main); overflow-x: hidden; }
 
-    /* Fundo Tecnológico Sutil */
     body::before {
       content: ""; position: fixed; inset: 0;
       background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.05) 0%, transparent 75%);
       pointer-events: none; z-index: 0;
     }
 
-    /* Layout da Sidebar */
     .sidebar {
       position: fixed; top: 0; left: 0; height: 100dvh; width: 80px;
       background: #090e17; border-right: 1px solid var(--border-color);
@@ -65,7 +63,6 @@
     .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 98; opacity: 0; pointer-events: none; transition: 0.3s; }
     .sidebar-backdrop.active { opacity: 1; pointer-events: auto; }
 
-    /* Area Principal */
     .main-wrapper { margin-left: 80px; padding: 28px 36px; transition: margin-left 0.3s; width: calc(100% - 80px); position: relative; z-index: 1; }
     .sidebar.open ~ .main-wrapper { margin-left: 280px; width: calc(100% - 280px); }
 
@@ -84,7 +81,6 @@
     }
     .view-btn.active { background: var(--bg-card-hover); color: var(--accent-color); border: 1px solid var(--border-accent); }
 
-    /* Layout Estante Deluxe (Grid) */
     .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
     
     .book-card {
@@ -108,13 +104,11 @@
     .book-title { font-size: 13px; font-weight: 700; color: var(--text-main); line-height: 1.4; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .book-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--accent-color); background: var(--accent-glow); padding: 3px 8px; border-radius: 4px; display: inline-block; width: fit-content; border: 1px solid var(--border-accent); }
 
-    /* Modulo Lista Compacta */
     .catalog-grid.list-view { display: flex; flex-direction: column; gap: 10px; }
     .catalog-grid.list-view .book-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 20px; }
     .catalog-grid.list-view .cover-container { width: 42px; height: 56px; margin-bottom: 0; flex-shrink: 0; }
     .catalog-grid.list-view .book-details { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-left: 16px; }
 
-    /* Controles de Paginação */
     .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 40px; }
     .page-link {
       background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
@@ -125,7 +119,6 @@
     .page-link:hover:not(.active):not(:disabled) { border-color: var(--accent-color); color: var(--text-main); }
     .page-link:disabled { opacity: 0.3; cursor: not-allowed; }
 
-    /* Leitor Modal Integrado */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(3, 5, 9, 0.92); backdrop-filter: blur(8px);
       z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px;
@@ -167,12 +160,12 @@
 
     <div class="search-box">
       <i class='bx bx-search'></i>
-      <input type="text" id="search-input" placeholder="Filtrar por nome ou código...">
+      <input type="text" id="search-input" placeholder="Filtrar edições...">
     </div>
 
     <ul class="nav-list" id="menu-list">
       <li>
-        <a class="active" data-catalog="collection-asas">
+        <a class="active">
           <i class='bx bxs-folder-open'></i>
           <span class="link-name">Coleção Asas de Guerra</span>
         </a>
@@ -183,8 +176,8 @@
   <main class="main-wrapper">
     <header class="top-header">
       <div class="header-info">
-        <h1 id="collection-title"><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
-        <p id="collection-sub">Acervo técnico especializado carregado via catálogo dinâmico.</p>
+        <h1><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Coleção Asas de Guerra</h1>
+        <p>Acervo técnico especializado de edições e manuais táticos.</p>
       </div>
 
       <div class="view-controls">
@@ -208,10 +201,47 @@
   </div>
 
   <script>
-    const R2_CATALOG_URL = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev/collection-asas/catalog.json";
+    const R2_BASE = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev/collection-asas";
+    
+    const arquivosList = [
+      "Asas de Guerra (Planeta) - 01_text.pdf", "Asas de Guerra (Planeta) - 02_text.pdf",
+      "Asas de Guerra (Planeta) - 03_text.pdf", "Asas de Guerra (Planeta) - 04_text.pdf",
+      "Asas de Guerra (Planeta) - 05_text.pdf", "Asas de Guerra (Planeta) - 06_text.pdf",
+      "Asas de Guerra (Planeta) - 07_text.pdf", "Asas de Guerra (Planeta) - 08_text.pdf",
+      "Asas de Guerra (Planeta) - 09_text.pdf", "Asas de Guerra (Planeta) - 10_text.pdf",
+      "Asas de Guerra (Planeta) - 11_text.pdf", "Asas de Guerra (Planeta) - 12_text.pdf",
+      "Asas de Guerra (Planeta) - 13_text.pdf", "Asas de Guerra (Planeta) - 14_text.pdf",
+      "Asas de Guerra (Planeta) - 15_text.pdf", "Asas de Guerra (Planeta) - 16_text.pdf",
+      "Asas de Guerra (Planeta) - 17_text.pdf", "Asas de Guerra (Planeta) - 18_text.pdf",
+      "Asas de Guerra (Planeta) - 19_text.pdf", "Asas de Guerra (Planeta) - 20_text.pdf",
+      "Asas de Guerra (Planeta) - 21_text.pdf", "Asas de Guerra (Planeta) - 22_text.pdf",
+      "Asas de Guerra (Planeta) - 23_text.pdf", "Asas de Guerra (Planeta) - 24_text.pdf",
+      "Asas de Guerra (Planeta) - 25_text.pdf", "Asas de Guerra (Planeta) - 26_text.pdf",
+      "Asas de Guerra (Planeta) - 27_text.pdf", "Asas de Guerra (Planeta) - 28_text.pdf",
+      "Asas de Guerra (Planeta) - 29_text.pdf", "Asas de Guerra (Planeta) - 30_text.pdf",
+      "Asas de Guerra (Planeta) - 31_text.pdf", "Asas de Guerra (Planeta) - 32_text.pdf",
+      "Asas de Guerra (Planeta) - 33_text.pdf", "Asas de Guerra (Planeta) - 34_text.pdf",
+      "Asas de Guerra (Planeta) - 35_text.pdf", "Asas de Guerra (Planeta) - 36_text.pdf",
+      "Asas de Guerra (Planeta) - 37_text.pdf", "Asas de Guerra (Planeta) - 38_text.pdf",
+      "Asas de Guerra (Planeta) - 40_text.pdf", "Asas de Guerra (Planeta) - 41_text.pdf",
+      "Asas de Guerra (Planeta) - 42_text.pdf", "Asas de Guerra (Planeta) - 48_text.pdf",
+      "Asas de Guerra (Planeta) - 49_text.pdf", "Asas de Guerra (Planeta) - 51_text.pdf",
+      "Asas de Guerra (Planeta) - 54_text.pdf"
+    ];
 
-    let catalogData = [];
-    let filteredData = [];
+    const catalogData = arquivosList.map(file => {
+      const baseName = file.replace("_text.pdf", "").replace(".pdf", "");
+      const imgName = baseName + ".jpg";
+      const num = baseName.split("-").pop().trim();
+      return {
+        titulo: `Asas de Guerra - Edição ${num}`,
+        pdf_url: `${R2_BASE}/${encodeURIComponent(file)}`,
+        capa_url: `${R2_BASE}/${encodeURIComponent(imgName)}`,
+        formato: "PDF"
+      };
+    });
+
+    let filteredData = [...catalogData];
     let currentPage = 1;
     const itemsPerPage = 12;
 
@@ -219,22 +249,6 @@
     const paginationContainer = document.getElementById('pagination-container');
     const searchInput = document.getElementById('search-input');
     const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('backdrop');
-
-    async function loadCatalog() {
-      try {
-        catalogContainer.innerHTML = '<p style="color:var(--text-muted); font-size:14px; padding: 20px;">Conectando ao catálogo dinâmico no Cloudflare R2...</p>';
-        const response = await fetch(R2_CATALOG_URL);
-        
-        if (!response.ok) throw new Error("Não foi possível carregar o arquivo catalog.json");
-        
-        catalogData = await response.json();
-        filteredData = [...catalogData];
-        renderCurrentPage();
-      } catch (err) {
-        catalogContainer.innerHTML = `<p style="color:#ef4444; font-size:14px; padding: 20px;">Erro ao carregar o catálogo dinâmico: ${err.message}. Certifique-se de que o arquivo catalog.json foi enviado para o Cloudflare R2.</p>`;
-      }
-    }
 
     function renderCurrentPage() {
       catalogContainer.innerHTML = '';
@@ -254,11 +268,11 @@
         card.className = 'book-card';
         card.innerHTML = `
           <div class="cover-container">
-            <img src="${item.capa_url}" alt="Capa ${item.titulo}" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'%2338bdf8\'><path d=\'M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z\'/></svg>';">
+            <img src="${item.capa_url}" alt="${item.titulo}" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'%2338bdf8\'><path d=\'M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z\'/></svg>';">
           </div>
           <div class="book-details">
             <div class="book-title">${item.titulo}</div>
-            <span class="book-badge">${item.formato || 'PDF'}</span>
+            <span class="book-badge">${item.formato}</span>
           </div>
         `;
         card.addEventListener('click', () => openReader(item.titulo, item.pdf_url));
@@ -322,7 +336,7 @@
       catalogContainer.className = 'catalog-grid list-view';
     });
 
-    document.addEventListener('DOMContentLoaded', loadCatalog);
+    document.addEventListener('DOMContentLoaded', renderCurrentPage);
   </script>
 </body>
 </html>
