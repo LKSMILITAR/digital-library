@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LKS MILITAR - Biblioteca Técnica & Projeção Tática Global</title>
+  
+  <!-- Google Fonts: Inter e Orbitron -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- PDF.js Engine e CSS de Renderização Oficial -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
+
+  <style>
+    :root {
+      --bg-deep-space: #06080c;
+      --bg-sidebar: #090c12;
+      --bg-card: #0d111a;
+      --bg-hover: rgba(255, 30, 60, 0.08);
+      --bg-active: rgba(255, 30, 60, 0.16);
+      
+      --border-dark: #161c28;
+      --red-tactical: #ff1e3c;
+      --red-glow: rgba(255, 30, 60, 0.4);
+      
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      
+      --sidebar-width: 280px;
+      --sidebar-collapsed-width: 72px;
+      --header-height: 60px;
+      --transition-speed: 0.25s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-deep-space);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* BARRA SUPERIOR DE NAVEGAÇÃO */
+    .top-navbar {
+      height: var(--header-height);
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-svg {
+      width: 28px;
+      height: 28px;
+      fill: var(--red-tactical);
+      filter: drop-shadow(0 0 8px var(--red-glow));
+    }
+
+    .brand-name {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .nav-breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-breadcrumbs span.active {
+      color: var(--red-tactical);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search-trigger {
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .search-trigger:hover {
+      color: var(--red-tactical);
+    }
+
+    .user-avatar-frame {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--red-tactical);
+      padding: 2px;
+      box-shadow: 0 0 10px var(--red-glow);
+      cursor: pointer;
+    }
+
+    .user-avatar-frame img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* ESTRUTURA PRINCIPAL DO PAINEL */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - var(--header-height));
+      position: relative;
+    }
+
+    /* SIDEBAR TÁTICA */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 12px;
+      transition: width var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    .toggle-sidebar-btn {
+      position: absolute;
+      right: -12px;
+      top: 20px;
+      width: 24px;
+      height: 24px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid var(--red-tactical);
+      color: var(--red-tactical);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--red-glow);
+      z-index: 60;
+      transition: transform var(--transition-speed);
+    }
+
+    .sidebar.collapsed .toggle-sidebar-btn {
+      transform: rotate(180deg);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 4px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar { width: 3px; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background-color: var(--border-dark); border-radius: 3px; }
+
+    .nav-group { margin-bottom: 20px; }
+
+    .nav-group-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 8px 12px 4px 12px;
+      white-space: nowrap;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .nav-item i {
+      color: var(--red-tactical);
+      flex-shrink: 0;
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .nav-item:hover {
+      background-color: var(--bg-hover);
+      color: #ffffff;
+      border-color: rgba(255, 30, 60, 0.2);
+    }
+
+    .nav-item:hover i { filter: drop-shadow(0 0 6px var(--red-glow)); }
+
+    .nav-item.active {
+      background-color: var(--bg-active);
+      color: #ffffff;
+      font-weight: 600;
+      border-color: var(--red-tactical);
+      box-shadow: inset 0 0 12px rgba(255, 30, 60, 0.15);
+    }
+
+    .nav-item.active i { filter: drop-shadow(0 0 8px var(--red-glow)); }
+
+    .sidebar.collapsed .hide-on-collapse { display: none !important; }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border-dark);
+      padding-top: 14px;
+      margin-top: 10px;
+    }
+
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+
+    .footer-brand-logo {
+      width: 24px;
+      height: 24px;
+      fill: var(--red-tactical);
+      filter: drop-shadow(0 0 6px var(--red-glow));
+      flex-shrink: 0;
+    }
+
+    .footer-brand-text { display: flex; flex-direction: column; }
+    .footer-brand-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 800; color: #ffffff; letter-spacing: 1px; }
+    .footer-brand-subtitle { font-size: 8px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+
+    /* ÁREA CENTRAL DE VISUALIZAÇÃO DE DOCUMENTOS */
+    .viewport-content {
+      flex: 1;
+      background-color: var(--bg-deep-space);
+      background-image: 
+        linear-gradient(rgba(22, 28, 40, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22, 28, 40, 0.4) 1px, transparent 1px);
+      background-size: 40px 40px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* BARRA DE FERRAMENTAS DO VISUALIZADOR PDF */
+    .viewer-toolbar {
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-group { display: flex; align-items: center; gap: 8px; }
+
+    .btn-tactical {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-dark);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-tactical:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--red-tactical);
+      color: var(--red-tactical);
+      box-shadow: 0 0 10px var(--red-glow);
+    }
+
+    .btn-tactical:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: var(--border-dark);
+      color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .page-info-box {
+      font-size: 12px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .page-info-box input {
+      background-color: var(--bg-deep-space);
+      border: 1px solid var(--border-dark);
+      color: var(--red-tactical);
+      text-align: center;
+      width: 44px;
+      padding: 4px;
+      font-size: 12px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .page-info-box input:focus {
+      outline: none;
+      border-color: var(--red-tactical);
+      box-shadow: 0 0 8px var(--red-glow);
+    }
+
+    /* CONTAINER DO CANVAS PDF */
+    .pdf-viewport {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px;
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.9);
+      background-color: #ffffff;
+      line-height: 0;
+      border-radius: 4px;
+      position: relative;
+      border: 1px solid var(--border-dark);
+    }
+
+    canvas { display: block; max-width: 100%; height: auto; }
+
+    .textLayer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+      opacity: 0.2;
+      line-height: 1.0;
+    }
+
+    /* TELA DE CARREGAMENTO TÁTICA */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(6, 8, 12, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      z-index: 20;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border-dark);
+      border-top: 3px solid var(--red-tactical);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      box-shadow: 0 0 12px var(--red-glow);
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* CANTONEIRAS TÁTICAS */
+    .corner-bracket {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: var(--red-tactical);
+      border-style: solid;
+      pointer-events: none;
+      opacity: 0.6;
+      z-index: 5;
+    }
+
+    .corner-tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+    .corner-tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+    .corner-bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+    .corner-br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR DE NAVEGAÇÃO -->
+  <header class="top-navbar">
+    <div class="brand-container">
+      <svg class="brand-logo-svg" viewBox="0 0 24 24">
+        <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z"/>
+      </svg>
+      <span class="brand-name">LKS MILITAR</span>
+    </div>
+
+    <nav class="nav-breadcrumbs">
+      <span>BIBLIOTECA TÉCNICA</span>
+      <span>//</span>
+      <span>CONHECIMENTO</span>
+      <span>//</span>
+      <span>ANÁLISE</span>
+      <span>//</span>
+      <span class="active" id="doc-title-breadcrumb">CARREGANDO...</span>
+    </nav>
+
+    <div class="top-actions">
+      <div class="search-trigger" title="Buscar Inteligência">
+        <i data-lucide="search" size="18"></i>
+      </div>
+      <div class="user-avatar-frame" title="Perfil do Operador">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100" alt="Operador">
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL DA APLICAÇÃO -->
+  <div class="app-container">
+    
+    <!-- SIDEBAR DE NAVEGAÇÃO -->
+    <aside class="sidebar" id="tacticalSidebar">
+      <button class="toggle-sidebar-btn" id="sidebarToggle" title="Alternar Painel">
+        <i data-lucide="chevron-left" size="14"></i>
+      </button>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <a href="#" class="nav-item active">
+            <i data-lucide="folder" size="18"></i>
+            <span class="hide-on-collapse">Biblioteca</span>
+          </a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title hide-on-collapse">Engenharia Fundamental</div>
+          <a href="#" class="nav-item"><i data-lucide="thermometer" size="18"></i><span class="hide-on-collapse">Termodinâmica</span></a>
+          <a href="#" class="nav-item"><i data-lucide="zap" size="18"></i><span class="hide-on-collapse">Eletrodinâmica</span></a>
+          <a href="#" class="nav-item"><i data-lucide="wind" size="18"></i><span class="hide-on-collapse">Aerodinâmica</span></a>
+          <a href="#" class="nav-item"><i data-lucide="gauge" size="18"></i><span class="hide-on-collapse">Propulsão</span></a>
+          <a href="#" class="nav-item"><i data-lucide="box" size="18"></i><span class="hide-on-collapse">Estruturas</span></a>
+          <a href="#" class="nav-item"><i data-lucide="layers" size="18"></i><span class="hide-on-collapse">Materiais</span></a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title hide-on-collapse">Sistemas Operacionais</div>
+          <a href="#" class="nav-item"><i data-lucide="cpu" size="18"></i><span class="hide-on-collapse">Eletrônica</span></a>
+          <a href="#" class="nav-item"><i data-lucide="crosshair" size="18"></i><span class="hide-on-collapse">Sistemas de Armas</span></a>
+          <a href="#" class="nav-item"><i data-lucide="radio" size="18"></i><span class="hide-on-collapse">Radar e Guerra Eletrônica</span></a>
+          <a href="#" class="nav-item"><i data-lucide="eye" size="18"></i><span class="hide-on-collapse">Inteligência e Vigilância</span></a>
+          <a href="#" class="nav-item"><i data-lucide="package" size="18"></i><span class="hide-on-collapse">Logística e Suprimento</span></a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title hide-on-collapse">Documentação & Simulação</div>
+          <a href="#" class="nav-item"><i data-lucide="book-open" size="18"></i><span class="hide-on-collapse">História Militar</span></a>
+          <a href="#" class="nav-item"><i data-lucide="file-text" size="18"></i><span class="hide-on-collapse">Manuais Técnicos</span></a>
+          <a href="#" class="nav-item"><i data-lucide="landmark" size="18"></i><span class="hide-on-collapse">Documentos Oficiais</span></a>
+          <a href="#" class="nav-item"><i data-lucide="hexagon" size="18"></i><span class="hide-on-collapse">Projetos e Simuladores</span></a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="footer-brand">
+          <svg class="footer-brand-logo" viewBox="0 0 24 24">
+            <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z"/>
+          </svg>
+          <div class="footer-brand-text hide-on-collapse">
+            <span class="footer-brand-title">LKS MILITAR</span>
+            <span class="footer-brand-subtitle">PROJEÇÃO TÁTICA GLOBAL</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ÁREA CENTRAL DE VISUALIZAÇÃO DE DOCUMENTOS -->
+    <main class="viewport-content">
+      <div class="corner-bracket corner-tl"></div>
+      <div class="corner-bracket corner-tr"></div>
+      <div class="corner-bracket corner-bl"></div>
+      <div class="corner-bracket corner-br"></div>
+
+      <!-- BARRA SUPERIOR DO VISUALIZADOR -->
+      <div class="viewer-toolbar">
+        <div class="toolbar-group">
+          <button id="prev-page" class="btn-tactical" title="Página Anterior">Anterior</button>
+          <div class="page-info-box">
+            <span>PÁG.</span>
+            <input type="number" id="page-num" value="1" min="1">
+            <span>DE <span id="page-count">--</span></span>
+          </div>
+          <button id="next-page" class="btn-tactical" title="Próxima Página">Próxima</button>
+        </div>
+
+        <div class="toolbar-group">
+          <button id="zoom-out" class="btn-tactical" title="Reduzir Zoom">-</button>
+          <span id="zoom-percent" class="page-info-box">100%</span>
+          <button id="zoom-in" class="btn-tactical" title="Aumentar Zoom">+</button>
+          <button id="zoom-fit" class="btn-tactical" title="Ajustar à Largura">Ajustar Largura</button>
+          <a id="download-btn" class="btn-tactical" href="#" download target="_blank">Baixar PDF</a>
+        </div>
+      </div>
+
+      <!-- VIEWPORT DO CANVAS PDF -->
+      <div class="pdf-viewport" id="viewport">
+        <div id="loading" class="loading-overlay">
+          <div class="spinner"></div>
+          <span>PROCESSANDO CAMADAS E GRÁFICOS DO DOCUMENTO...</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="pdf-canvas"></canvas>
+          <div id="text-layer" class="textLayer"></div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const sidebar = document.getElementById('tacticalSidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+    });
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const defaultPdf = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev/eletrodinamica/maxwell_electricity_magnetism_vol1.pdf";
+    const pdfUrl = urlParams.get('file') || defaultPdf;
+    const pdfTitle = urlParams.get('title') || "SUPERIORIDADE TÁTICA";
+
+    document.getElementById('doc-title-breadcrumb').innerText = pdfTitle.toUpperCase();
+
+    let pdfDoc = null,
+        pageNum = 1,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 1.25,
+        canvas = document.getElementById('pdf-canvas'),
+        ctx = canvas.getContext('2d'),
+        textLayerDiv = document.getElementById('text-layer'),
+        loadingEl = document.getElementById('loading'),
+        pageNumInput = document.getElementById('page-num'),
+        pageCountEl = document.getElementById('page-count'),
+        zoomPercentEl = document.getElementById('zoom-percent'),
+        downloadBtn = document.getElementById('download-btn');
+
+    downloadBtn.href = pdfUrl;
+
+    function renderPage(num) {
+      pageRendering = true;
+
+      pdfDoc.getPage(num).then(function(page) {
+        const pixelRatio = window.devicePixelRatio || 1;
+        const viewport = page.getViewport({ scale: scale });
+
+        canvas.height = viewport.height * pixelRatio;
+        canvas.width = viewport.width * pixelRatio;
+        canvas.style.width = viewport.width + 'px';
+        canvas.style.height = viewport.height + 'px';
+
+        ctx.scale(pixelRatio, pixelRatio);
+
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+
+        const renderTask = page.render(renderContext);
+
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          if (pageNumPending !== null) {
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+
+        textLayerDiv.innerHTML = '';
+        textLayerDiv.style.width = viewport.width + 'px';
+        textLayerDiv.style.height = viewport.height + 'px';
+
+        page.getTextContent().then(function(textContent) {
+          pdfjsLib.renderTextLayer({
+            textContent: textContent,
+            container: textLayerDiv,
+            viewport: viewport,
+            textDivs: []
+          });
+        });
+      });
+
+      pageNumInput.value = num;
+      zoomPercentEl.textContent = Math.round(scale * 100) + '%';
+    }
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    function onPrevPage() {
+      if (pageNum <= 1) return;
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) return;
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+
+    function onZoomIn() {
+      if (scale >= 3.0) return;
+      scale += 0.25;
+      queueRenderPage(pageNum);
+    }
+
+    function onZoomOut() {
+      if (scale <= 0.5) return;
+      scale -= 0.25;
+      queueRenderPage(pageNum);
+    }
+
+    function onZoomFit() {
+      if (!pdfDoc) return;
+      pdfDoc.getPage(pageNum).then(function(page) {
+        const containerWidth = document.getElementById('viewport').clientWidth - 48;
+        const unscaledViewport = page.getViewport({ scale: 1.0 });
+        scale = containerWidth / unscaledViewport.width;
+        queueRenderPage(pageNum);
+      });
+    }
+
+    document.getElementById('prev-page').addEventListener('click', onPrevPage);
+    document.getElementById('next-page').addEventListener('click', onNextPage);
+    document.getElementById('zoom-in').addEventListener('click', onZoomIn);
+    document.getElementById('zoom-out').addEventListener('click', onZoomOut);
+    document.getElementById('zoom-fit').addEventListener('click', onZoomFit);
+
+    pageNumInput.addEventListener('change', function() {
+      let val = parseInt(this.value);
+      if (val >= 1 && val <= pdfDoc.numPages) {
+        pageNum = val;
+        queueRenderPage(pageNum);
+      } else {
+        this.value = pageNum;
+      }
+    });
+
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        onNextPage();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        onPrevPage();
+      }
+    });
+
+    pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      pageCountEl.textContent = pdfDoc.numPages;
+      pageNumInput.max = pdfDoc.numPages;
+      loadingEl.style.display = 'none';
+      renderPage(pageNum);
+    }).catch(function(error) {
+      loadingEl.innerHTML = '<span style="color: var(--red-tactical); font-weight: 700;">[ERRO] FALHA AO CARREGAR O ARQUIVO DO SERVIDOR R2.</span>';
+      console.error('Falha no PDF.js:', error);
+    });
+  </script>
+</body>
+</html>
