@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador Técnico - LKSMILITAR</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #06090e; color: #f8fafc; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .toolbar { background-color: #0d131e; border-bottom: 1px solid #1e293b; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 10; user-select: none; }
+        .toolbar-group { display: flex; align-items: center; gap: 8px; }
+        .doc-title { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: #38bdf8; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        button, a.btn-download { background-color: #141c2d; color: #f8fafc; border: 1px solid #1e293b; padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        button:hover, a.btn-download:hover { background-color: #1e293b; border-color: #38bdf8; color: #38bdf8; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; border-color: #1e293b; color: #64748b; }
+        .page-info { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; }
+        .page-info input { background-color: #06090e; border: 1px solid #1e293b; color: #38bdf8; text-align: center; width: 48px; padding: 4px; font-size: 12px; border-radius: 4px; font-weight: 600; }
+        .page-info input:focus { outline: none; border-color: #38bdf8; }
+        .viewport-container { flex: 1; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 20px; background-color: #030509; position: relative; }
+        .canvas-wrapper { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); background-color: #ffffff; line-height: 0; border-radius: 4px; position: relative; border: 1px solid #1e293b; }
+        canvas { display: block; max-width: 100%; height: auto; }
+        .loading-overlay { position: absolute; inset: 0; background-color: rgba(6, 9, 14, 0.92); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; z-index: 5; font-size: 13px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; }
+        .spinner { width: 32px; height: 32px; border: 3px solid #1e293b; border-top: 3px solid #38bdf8; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <span class="doc-title" id="doc-title-display">Carregando...</span>
+        </div>
+
+        <div class="toolbar-group">
+            <button id="prev-page" title="Página Anterior">Anterior</button>
+            <div class="page-info">
+                <span>Pág.</span>
+                <input type="number" id="page-num" value="1" min="1">
+                <span>de <span id="page-count">--</span></span>
+            </div>
+            <button id="next-page" title="Próxima Página">Próxima</button>
+        </div>
+
+        <div class="toolbar-group">
+            <button id="zoom-out" title="Reduzir Zoom">-</button>
+            <span id="zoom-percent" class="page-info">100%</span>
+            <button id="zoom-in" title="Aumentar Zoom">+</button>
+            <button id="zoom-fit" title="Ajustar à Largura">Ajustar Largura</button>
+            <a id="download-btn" class="btn-download" href="#" download target="_blank">Baixar PDF</a>
+        </div>
+    </div>
+
+    <div class="viewport-container" id="viewport">
+        <div id="loading" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>INICIALIZANDO MOTOR PDF.JS...</span>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="pdf-canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';[span_1](start_span)[span_1](end_span)
+
+        // Captação dinâmica do parâmetro de URL (?file=...&title=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const defaultPdf = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev/eletrodinamica/maxwell_electricity_magnetism_vol1.pdf";
+        const pdfUrl = urlParams.get('file') || defaultPdf;
+        const pdfTitle = urlParams.get('title') || "DOCUMENTO TÉCNICO";
+
+        document.getElementById('doc-title-display').innerText = pdfTitle;
+        document.getElementById('doc-title-display').title = pdfTitle;
+
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.25,
+            canvas = document.getElementById('pdf-canvas'),[span_2](start_span)[span_2](end_span)
+            ctx = canvas.getContext('2d'),[span_3](start_span)[span_3](end_span)
+            loadingEl = document.getElementById('loading'),[span_4](start_span)[span_4](end_span)
+            pageNumInput = document.getElementById('page-num'),[span_5](start_span)[span_5](end_span)
+            pageCountEl = document.getElementById('page-count'),[span_6](start_span)[span_6](end_span)
+            zoomPercentEl = document.getElementById('zoom-percent'),[span_7](start_span)[span_7](end_span)
+            downloadBtn = document.getElementById('download-btn');[span_8](start_span)[span_8](end_span)
+
+        downloadBtn.href = pdfUrl;
+
+        function renderPage(num) {
+            pageRendering = true;[span_9](start_span)[span_9](end_span)
+
+            pdfDoc.getPage(num).then(function(page) {[span_10](start_span)[span_10](end_span)
+                const pixelRatio = window.devicePixelRatio || 1;[span_11](start_span)[span_11](end_span)
+                const viewport = page.getViewport({ scale: scale });[span_12](start_span)[span_12](end_span)
+
+                canvas.height = viewport.height * pixelRatio;[span_13](start_span)[span_13](end_span)
+                canvas.width = viewport.width * pixelRatio;[span_14](start_span)[span_14](end_span)
+                canvas.style.width = viewport.width + 'px';[span_15](start_span)[span_15](end_span)
+                canvas.style.height = viewport.height + 'px';[span_16](start_span)[span_16](end_span)
+
+                ctx.scale(pixelRatio, pixelRatio);[span_17](start_span)[span_17](end_span)
+
+                const renderContext = {
+                    canvasContext: ctx,[span_18](start_span)[span_18](end_span)
+                    viewport: viewport[span_19](start_span)[span_19](end_span)
+                };
+
+                const renderTask = page.render(renderContext);[span_20](start_span)[span_20](end_span)
+
+                renderTask.promise.then(function() {[span_21](start_span)[span_21](end_span)
+                    pageRendering = false;[span_22](start_span)[span_22](end_span)
+                    if (pageNumPending !== null) {[span_23](start_span)[span_23](end_span)
+                        renderPage(pageNumPending);[span_24](start_span)[span_24](end_span)
+                        pageNumPending = null;[span_25](start_span)[span_25](end_span)
+                    }
+                });
+            });
+
+            pageNumInput.value = num;[span_26](start_span)[span_26](end_span)
+            zoomPercentEl.textContent = Math.round(scale * 100) + '%';[span_27](start_span)[span_27](end_span)
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {[span_28](start_span)[span_28](end_span)
+                pageNumPending = num;[span_29](start_span)[span_29](end_span)
+            } else {
+                renderPage(num);[span_30](start_span)[span_30](end_span)
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) return;[span_31](start_span)[span_31](end_span)
+            pageNum--;[span_32](start_span)[span_32](end_span)
+            queueRenderPage(pageNum);[span_33](start_span)[span_33](end_span)
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) return;[span_34](start_span)[span_34](end_span)
+            pageNum++;[span_35](start_span)[span_35](end_span)
+            queueRenderPage(pageNum);[span_36](start_span)[span_36](end_span)
+        }
+
+        function onZoomIn() {
+            if (scale >= 3.0) return;[span_37](start_span)[span_37](end_span)
+            scale += 0.25;[span_38](start_span)[span_38](end_span)
+            queueRenderPage(pageNum);[span_39](start_span)[span_39](end_span)
+        }
+
+        function onZoomOut() {
+            if (scale <= 0.5) return;[span_40](start_span)[span_40](end_span)
+            scale -= 0.25;[span_41](start_span)[span_41](end_span)
+            queueRenderPage(pageNum);[span_42](start_span)[span_42](end_span)
+        }
+
+        function onZoomFit() {
+            if (!pdfDoc) return;[span_43](start_span)[span_43](end_span)
+            pdfDoc.getPage(pageNum).then(function(page) {[span_44](start_span)[span_44](end_span)
+                const containerWidth = document.getElementById('viewport').clientWidth - 40;[span_45](start_span)[span_45](end_span)
+                const unscaledViewport = page.getViewport({ scale: 1.0 });[span_46](start_span)[span_46](end_span)
+                scale = containerWidth / unscaledViewport.width;[span_47](start_span)[span_47](end_span)
+                queueRenderPage(pageNum);[span_48](start_span)[span_48](end_span)
+            });
+        }
+
+        document.getElementById('prev-page').addEventListener('click', onPrevPage);[span_49](start_span)[span_49](end_span)
+        document.getElementById('next-page').addEventListener('click', onNextPage);[span_50](start_span)[span_50](end_span)
+        document.getElementById('zoom-in').addEventListener('click', onZoomIn);[span_51](start_span)[span_51](end_span)
+        document.getElementById('zoom-out').addEventListener('click', onZoomOut);[span_52](start_span)[span_52](end_span)
+        document.getElementById('zoom-fit').addEventListener('click', onZoomFit);[span_53](start_span)[span_53](end_span)
+
+        pageNumInput.addEventListener('change', function() {[span_54](start_span)[span_54](end_span)
+            let val = parseInt(this.value);[span_55](start_span)[span_55](end_span)
+            if (val >= 1 && val <= pdfDoc.numPages) {[span_56](start_span)[span_56](end_span)
+                pageNum = val;[span_57](start_span)[span_57](end_span)
+                queueRenderPage(pageNum);[span_58](start_span)[span_58](end_span)
+            } else {
+                this.value = pageNum;[span_59](start_span)[span_59](end_span)
+            }
+        });
+
+        window.addEventListener('keydown', function(e) {[span_60](start_span)[span_60](end_span)
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') {[span_61](start_span)[span_61](end_span)
+                onNextPage();[span_62](start_span)[span_62](end_span)
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {[span_63](start_span)[span_63](end_span)
+                onPrevPage();[span_64](start_span)[span_64](end_span)
+            }
+        });
+
+        pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {[span_65](start_span)[span_65](end_span)
+            pdfDoc = pdfDoc_;[span_66](start_span)[span_66](end_span)
+            pageCountEl.textContent = pdfDoc.numPages;[span_67](start_span)[span_67](end_span)
+            pageNumInput.max = pdfDoc.numPages;[span_68](start_span)[span_68](end_span)
+            loadingEl.style.display = 'none';[span_69](start_span)[span_69](end_span)
+            renderPage(pageNum);[span_70](start_span)[span_70](end_span)
+        }).catch(function(error) {
+            loadingEl.innerHTML = '<span style="color: #ef4444; font-weight: 600;">[ERRO] FALHA AO CARREGAR O ARQUIVO DO SERVIDOR R2.</span>';[span_71](start_span)[span_71](end_span)
+            console.error('Falha no PDF.js:', error);[span_72](start_span)[span_72](end_span)
+        });
+    </script>
+</body>
+</html>
