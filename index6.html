@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LKSMILITAR - Dynamic Technical Library</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Ícones: BoxIcons e Lucide -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-main: #06090e;
+      --bg-card: #0d131e;
+      --bg-card-hover: #141c2d;
+      --border-color: #1e293b;
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --accent-color: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      
+      --red-tactical: #ff1e3c;
+      --red-glow: rgba(255, 30, 60, 0.4);
+
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html, body { width: 100%; min-height: 100dvh; background: var(--bg-main); color: var(--text-main); overflow-x: hidden; }
+
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.05) 0%, transparent 75%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed; top: 0; left: 0; height: 100dvh; width: 280px;
+      background: #090e17; border-right: 1px solid var(--border-color);
+      padding: 16px 12px; z-index: 999; transition: transform 0.3s ease;
+      display: flex; flex-direction: column; backdrop-filter: blur(10px);
+    }
+
+    .logo-details { height: 50px; display: flex; align-items: center; justify-content: space-between; position: relative; margin-bottom: 20px; padding: 0 8px; }
+    .logo-left { display: flex; align-items: center; gap: 10px; }
+    .logo-details i.icon { color: var(--accent-color); font-size: 26px; }
+    .logo-name { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
+    .logo-details #btn-close-sidebar { font-size: 24px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    .search-box { position: relative; margin-bottom: 16px; }
+    .search-box input {
+      font-size: 13px; color: var(--text-main); outline: none; height: 42px; width: 100%;
+      border: 1px solid var(--border-color); border-radius: 8px; background: #05080f; padding: 0 12px 0 42px;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus { border-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow); }
+    .search-box i { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); font-size: 18px; color: var(--text-muted); }
+
+    .nav-list { flex: 1; overflow-y: auto; list-style: none; }
+    .nav-list::-webkit-scrollbar { width: 3px; }
+    .nav-list::-webkit-scrollbar-thumb { background-color: var(--border-color); }
+    
+    .nav-group-title {
+      font-size: 9px; font-weight: 700; color: var(--text-muted); letter-spacing: 1.5px;
+      text-transform: uppercase; padding: 12px 12px 6px 12px; white-space: nowrap;
+    }
+
+    .nav-list li { margin-bottom: 4px; }
+    .nav-list a { display: flex; height: 42px; border-radius: 8px; align-items: center; text-decoration: none; transition: 0.2s; cursor: pointer; border: 1px solid transparent; padding: 0 12px; gap: 12px; }
+    .nav-list a:hover, .nav-list a.active { background: var(--bg-card-hover); border-color: var(--border-accent); }
+    .nav-list a i { font-size: 18px; color: var(--accent-color); flex-shrink: 0; }
+    .nav-list a .link-name { color: #cbd5e1; font-size: 13px; font-weight: 600; white-space: nowrap; }
+
+    .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 998; opacity: 0; pointer-events: none; transition: 0.3s; }
+    .sidebar-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    .main-wrapper { margin-left: 0; padding: 16px; width: 100%; position: relative; z-index: 1; }
+
+    .top-header {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 20px; background: var(--bg-card); padding: 14px 18px; border-radius: 12px;
+      border: 1px solid var(--border-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .header-left-group { display: flex; align-items: center; gap: 12px; }
+    .btn-open-sidebar {
+      background: #05080f; border: 1px solid var(--border-color); color: var(--accent-color);
+      width: 40px; height: 40px; border-radius: 8px; font-size: 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .btn-open-sidebar:hover { border-color: var(--accent-color); }
+
+    .header-info h1 { font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .header-info p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .view-controls { display: flex; gap: 4px; background: #05080f; padding: 3px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .view-btn {
+      border: none; background: transparent; padding: 6px 10px; border-radius: 6px; cursor: pointer;
+      color: var(--text-muted); font-size: 16px; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .view-btn.active { background: var(--bg-card-hover); color: var(--accent-color); border: 1px solid var(--border-accent); }
+
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+
+    .book-card {
+      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;
+      display: flex; flex-direction: column; transition: transform 0.25s ease, border-color 0.25s ease;
+      cursor: pointer; position: relative; overflow: hidden;
+    }
+    .book-card:hover { transform: translateY(-4px); border-color: var(--accent-color); }
+
+    .cover-container {
+      width: 100%; height: 190px; background: #04070d; border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--border-color); margin-bottom: 8px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cover-container img { width: 100%; height: 100%; object-fit: cover; }
+
+    .fallback-cover {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 12px; text-align: center; width: 100%; height: 100%; background: #070c16;
+    }
+    .fallback-cover i { font-size: 36px; color: var(--accent-color); }
+    .fallback-cover span { font-size: 11px; font-weight: 700; color: #cbd5e1; line-height: 1.2; }
+
+    .book-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .book-title { font-size: 12px; font-weight: 700; color: var(--text-main); line-height: 1.3; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .book-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 600; color: var(--accent-color); background: var(--accent-glow); padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; border: 1px solid var(--border-accent); }
+
+    .catalog-grid.list-view { display: flex; flex-direction: column; gap: 8px; }
+    .catalog-grid.list-view .book-card { flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 14px; }
+    .catalog-grid.list-view .cover-container { width: 36px; height: 48px; margin-bottom: 0; flex-shrink: 0; }
+    .catalog-grid.list-view .book-details { flex-direction: row; align-items: center; justify-content: space-between; width: 100%; margin-left: 12px; }
+
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 28px; }
+    .page-link {
+      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted);
+      width: 36px; height: 36px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .page-link.active { background: var(--accent-color); color: #000; border-color: var(--accent-color); font-weight: 800; }
+    .page-link:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* MODAL READER ORIGINAL EM IFRAME */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(3, 5, 9, 0.92); backdrop-filter: blur(8px);
+      z-index: 999; display: none; align-items: center; justify-content: center; padding: 10px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal-window {
+      background: var(--bg-card); width: 100%; max-width: 1200px; height: 100%; max-height: 96dvh;
+      border-radius: 12px; border: 1px solid var(--border-accent); display: flex; flex-direction: column; overflow: hidden;
+    }
+    .modal-topbar { padding: 12px 16px; background: #070b12; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .modal-topbar h3 { font-size: 13px; font-weight: 700; color: var(--text-main); font-family: 'JetBrains Mono', monospace; }
+    .modal-close-btn { background: transparent; border: none; font-size: 24px; color: var(--text-muted); cursor: pointer; }
+    .modal-frame-container { flex: 1; width: 100%; height: 100%; background: #000; }
+    .modal-frame-container iframe { width: 100%; height: 100%; border: none; }
+
+    @media (max-width: 1024px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+    }
+    @media (min-width: 1025px) {
+      .main-wrapper { margin-left: 280px; width: calc(100% - 280px); }
+      .btn-open-sidebar { display: none; }
+      .sidebar { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-backdrop" id="backdrop"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="logo-details">
+      <div class="logo-left">
+        <i class='bx bxs-terminal icon'></i>
+        <span class="logo-name">LKSMILITAR</span>
+      </div>
+      <i class='bx bx-x' id="btn-close-sidebar"></i>
+    </div>
+
+    <div class="search-box">
+      <i class='bx bx-search'></i>
+      <input type="text" id="search-input" placeholder="Buscar no acervo...">
+    </div>
+
+    <ul class="nav-list" id="menu-list"></ul>
+  </nav>
+
+  <main class="main-wrapper">
+    <header class="top-header">
+      <div class="header-left-group">
+        <button class="btn-open-sidebar" id="btn-open-sidebar" aria-label="Abrir Menu">
+          <i class='bx bx-menu'></i>
+        </button>
+        <div class="header-info">
+          <h1 id="modulo-titulo"><i class='bx bxs-layer' style="color:var(--accent-color)"></i> Eletrodinâmica & Radar</h1>
+          <p id="modulo-subtitulo">Tratados teóricos, eletromagnetismo clássico e equações fundamentais.</p>
+        </div>
+      </div>
+
+      <div class="view-controls">
+        <button class="view-btn active" id="btn-grid-mode" title="Modo Estante"><i class='bx bx-grid-alt'></i></button>
+        <button class="view-btn" id="btn-list-mode" title="Modo Lista"><i class='bx bx-list-ul'></i></button>
+      </div>
+    </header>
+
+    <section id="catalog-container" class="catalog-grid"></section>
+    <nav id="pagination-container" class="pagination"></nav>
+  </main>
+
+  <div id="modal-reader" class="modal-backdrop">
+    <div class="modal-window">
+      <header class="modal-topbar">
+        <h3 id="modal-doc-title">DOCUMENTO TÉCNICO</h3>
+        <button class="modal-close-btn" id="btn-close-modal">&times;</button>
+      </header>
+      <div class="modal-frame-container" id="modal-frame-wrapper"></div>
+    </div>
+  </div>
+
+  <script>
+    const R2_BASE = "https://pub-dfac5265440e49cd865941281f2a36c6.r2.dev";
+
+    // ARQUIVOS DAS COLEÇÕES
+    const colecaoAsasArquivos = [
+      "Asas de Guerra (Planeta) - 01_text.pdf", "Asas de Guerra (Planeta) - 02_text.pdf",
+      "Asas de Guerra (Planeta) - 03_text.pdf", "Asas de Guerra (Planeta) - 04_text.pdf",
+      "Asas de Guerra (Planeta) - 05_text.pdf", "Asas de Guerra (Planeta) - 06_text.pdf",
+      "Asas de Guerra (Planeta) - 07_text.pdf", "Asas de Guerra (Planeta) - 08_text.pdf",
+      "Asas de Guerra (Planeta) - 09_text.pdf", "Asas de Guerra (Planeta) - 10_text.pdf",
+      "Asas de Guerra (Planeta) - 11_text.pdf", "Asas de Guerra (Planeta) - 12_text.pdf",
+      "Asas de Guerra (Planeta) - 13_text.pdf", "Asas de Guerra (Planeta) - 14_text.pdf",
+      "Asas de Guerra (Planeta) - 15_text.pdf", "Asas de Guerra (Planeta) - 16_text.pdf",
+      "Asas de Guerra (Planeta) - 17_text.pdf", "Asas de Guerra (Planeta) - 18_text.pdf",
+      "Asas de Guerra (Planeta) - 19_text.pdf", "Asas de Guerra (Planeta) - 20_text.pdf",
+      "Asas de Guerra (Planeta) - 21_text.pdf", "Asas de Guerra (Planeta) - 22_text.pdf",
+      "Asas de Guerra (Planeta) - 23_text.pdf", "Asas de Guerra (Planeta) - 24_text.pdf",
+      "Asas de Guerra (Planeta) - 25_text.pdf", "Asas de Guerra (Planeta) - 26_text.pdf",
+      "Asas de Guerra (Planeta) - 27_text.pdf", "Asas de Guerra (Planeta) - 28_text.pdf",
+      "Asas de Guerra (Planeta) - 29_text.pdf", "Asas de Guerra (Planeta) - 30_text.pdf",
+      "Asas de Guerra (Planeta) - 31_text.pdf", "Asas de Guerra (Planeta) - 32_text.pdf",
+      "Asas de Guerra (Planeta) - 33_text.pdf", "Asas de Guerra (Planeta) - 34_text.pdf",
+      "Asas de Guerra (Planeta) - 35_text.pdf", "Asas de Guerra (Planeta) - 36_text.pdf",
+      "Asas de Guerra (Planeta) - 37_text.pdf", "Asas de Guerra (Planeta) - 38_text.pdf",
+      "Asas de Guerra (Planeta) - 40_text.pdf", "Asas de Guerra (Planeta) - 41_text.pdf",
+      "Asas de Guerra (Planeta) - 42_text.pdf", "Asas de Guerra (Planeta) - 48_text.pdf",
+      "Asas de Guerra (Planeta) - 49_text.pdf", "Asas de Guerra (Planeta) - 51_text.pdf",
+      "Asas de Guerra (Planeta) - 54_text.pdf"
+    ];
+
+    const colecaoOspreyArquivos = [
+      "01_Osprey.pdf", "02_Osprey.pdf", "03_Osprey.pdf", "04_Osprey.pdf", "05_Osprey.pdf",
+      "06_Osprey.pdf", "07_Osprey.pdf", "08_Osprey.pdf", "09_Osprey.pdf", "10_Osprey.pdf"
+    ];
+
+    const eletrodinamicaOrdenada = [
+      { pdf: "maxwell_electricity_magnetism_vol1.pdf", titulo: "Maxwell - Treatise on Electricity and Magnetism (Vol 1)", badge: "OBRA-PRIMA" },
+      { pdf: "maxwell_scientific_papers_vol1.pdf", titulo: "Maxwell - Scientific Papers (Volume 1)", badge: "FUNDAMENTAL" },
+      { pdf: "maxwell_scientific_papers_vol2.pdf", titulo: "Maxwell - Scientific Papers (Volume 2)", badge: "FUNDAMENTAL" },
+      { pdf: "moyses_nussenzveig_fisica_3.pdf", titulo: "Moysés Nussenzveig - Curso de Física Básica Vol 3 (Eletromagnetismo)", badge: "PORTUGUÊS" },
+      { pdf: "moyses_nussenzveig_fisica_2.pdf", titulo: "Moysés Nussenzveig - Curso de Física Básica Vol 2 (Ondas e Calor)", badge: "PORTUGUÊS" },
+      { pdf: "halliday_fisica_3_eletromagnetismo.pdf", titulo: "Halliday & Resnick - Física 3: Eletromagnetismo", badge: "PORTUGUÊS" },
+      { pdf: "hayt_eletromagnetismo_8ed.pdf", titulo: "Hayt & Buck - Eletromagnetismo (8ª Edição)", badge: "PORTUGUÊS" },
+      { pdf: "eletromagnetico.pdf", titulo: "Tratado de Eletromagnetismo", badge: "PORTUGUÊS" },
+      { pdf: "bredov_electrodinamica_clasica.pdf", titulo: "Brédov, Rumiántsev & Toptiguin - Electrodinámica Clásica", badge: "TRADUÇÃO PT/ES" },
+      { pdf: "jackson_classical_electrodynamics_3ed.pdf", titulo: "J.D. Jackson - Classical Electrodynamics (3rd Edition)", badge: "REFERÊNCIA" },
+      { pdf: "skolnik_introduction_to_radar_systems.pdf", titulo: "Merrill I. Skolnik - Introduction to Radar Systems", badge: "RADAR STANDARD" },
+      { pdf: "ufimtsev_method_of_edge_waves.pdf", titulo: "Pyotr Ufimtsev - Method of Edge Waves in Physical Theory of Diffraction", badge: "STEALTH/RCS" },
+      { pdf: "electronic_warfare_fundamentals.pdf", titulo: "USAF - Electronic Warfare Fundamentals", badge: "EW / GUERRA ELETRÔNICA" }
+    ];
+
+    // ESTRUTURA DE MÓDULOS EXPANDIDA (TODAS AS PASTAS E ÍCONES)
+    const modulos = [
+      // ENGENHARIA FUNDAMENTAL
+      { grupo: "Engenharia Fundamental", id: "eletrodinamica", nome: "Eletrodinâmica", subtitulo: "Tratados teóricos, eletromagnetismo clássico e equações fundamentais.", icon: "bx-zap", pastaR2: "eletrodinamica", tipo: "custom", dados: eletrodinamicaOrdenada },
+      { grupo: "Engenharia Fundamental", id: "termodinamica", nome: "Termodinâmica", subtitulo: "Ciclos térmicos, física estatística e transferência de calor.", icon: "bx-hot", pastaR2: "termodinamica", tipo: "vazio" },
+      { grupo: "Engenharia Fundamental", id: "aerodinamica", nome: "Aerodinâmica", subtitulo: "Mecânica dos fluidos, CFD, escoamento de cavidades e arrasto.", icon: "bx-wind", pastaR2: "aerodinamica", tipo: "vazio" },
+      { grupo: "Engenharia Fundamental", id: "propulsao", nome: "Propulsão", subtitulo: "Motores a reação, ciclos de turbinas de gás e propelentes.", icon: "bx-tachometer", pastaR2: "propulsao", tipo: "vazio" },
+      { grupo: "Engenharia Fundamental", id: "estruturas-e-materiais", nome: "Estruturas e Materiais", subtitulo: "Resistência dos materiais, metalurgia e ligas aeroespaciais.", icon: "bx-cube", pastaR2: "estruturas-e-materiais", tipo: "vazio" },
+
+      // SISTEMAS OPERACIONAIS
+      { grupo: "Sistemas Operacionais", id: "sistemas-e-eletronica", nome: "Sistemas & Eletrônica", subtitulo: "Semicondutores, barramentos de dados MIL-STD e aviônica.", icon: "bx-chip", pastaR2: "sistemas-e-eletronica", tipo: "vazio" },
+      { grupo: "Sistemas Operacionais", id: "guerra-eletronica-e-radar", nome: "Radar & Guerra Eletrônica", subtitulo: "Módulos AESA, contramedidas DRFM e análise de RCS.", icon: "bx-radar", pastaR2: "guerra-eletronica-e-radar", tipo: "vazio" },
+
+      // DOCUMENTAÇÃO E COLEÇÕES
+      { grupo: "Documentação & Coleções", id: "collection-asas", nome: "Coleção Asas de Guerra", subtitulo: "Acervo técnico especializado em aviação militar.", icon: "bx-folder-open", pastaR2: "collection-asas", tipo: "lista", lista: colecaoAsasArquivos, prefixoTitulo: "Asas de Guerra - Edição " },
+      { grupo: "Documentação & Coleções", id: "collection-osprey", nome: "Coleção Osprey Publishing", subtitulo: "Monografias e manuais de sistemas de armas e aeronaves.", icon: "bx-book-alt", pastaR2: "collection-osprey", tipo: "lista", lista: colecaoOspreyArquivos, prefixoTitulo: "Osprey Edition - Volume " },
+      { grupo: "Documentação & Coleções", id: "historia-e-manuais", nome: "História & Manuais Técnicos", subtitulo: "Manuais de voo, guias operacionais e acervo histórico.", icon: "bx-history", pastaR2: "historia-e-manuais", tipo: "vazio" }
+    ];
+
+    let moduloAtivo = "eletrodinamica";
+    let catalogData = [];
+    let filteredData = [];
+    let currentPage = 1;
+    const itemsPerPage = 12;
+
+    const catalogContainer = document.getElementById('catalog-container');
+    const paginationContainer = document.getElementById('pagination-container');
+    const searchInput = document.getElementById('search-input');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('backdrop');
+
+    function renderizarMenu() {
+      const menuContainer = document.getElementById('menu-list');
+      menuContainer.innerHTML = '';
+      
+      let grupoAtual = "";
+
+      modulos.forEach(m => {
+        if (m.grupo !== grupoAtual) {
+          grupoAtual = m.grupo;
+          const titleDiv = document.createElement('div');
+          titleDiv.className = 'nav-group-title';
+          titleDiv.innerText = grupoAtual;
+          menuContainer.appendChild(titleDiv);
+        }
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <a class="${m.id === moduloAtivo ? 'active' : ''}" data-id="${m.id}">
+            <i class='bx ${m.icon}'></i>
+            <span class="link-name">${m.nome}</span>
+          </a>
+        `;
+        li.querySelector('a').addEventListener('click', () => {
+          if (sidebar.classList.contains('open')) toggleSidebar();
+          carregarModulo(m.id);
+        });
+        menuContainer.appendChild(li);
+      });
+    }
+
+    function carregarModulo(idModulo) {
+      moduloAtivo = idModulo;
+      const mod = modulos.find(m => m.id === idModulo) || modulos[0];
+
+      document.getElementById('modulo-titulo').innerHTML = `<i class='bx ${mod.icon}' style="color:var(--accent-color)"></i> ${mod.nome}`;
+      document.getElementById('modulo-subtitulo').innerText = mod.subtitulo;
+
+      renderizarMenu();
+
+      if (mod.tipo === "custom") {
+        catalogData = mod.dados.map(item => {
+          const baseName = item.pdf.replace(".pdf", "");
+          return {
+            titulo: item.titulo,
+            pdf_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(item.pdf)}`,
+            capa_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(baseName + '-001.jpg')}`,
+            capa_alt: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(baseName + '.jpg')}`,
+            formato: item.badge || "PDF"
+          };
+        });
+      } else if (mod.tipo === "lista") {
+        catalogData = mod.lista.map(file => {
+          const imgName = file.replace(".pdf", ".jpg");
+          const baseName = file.replace("_text.pdf", "").replace(".pdf", "").replace("_Osprey", "");
+          const num = baseName.split("-").pop().replace("_", "").trim();
+
+          return {
+            titulo: `${mod.prefixoTitulo}${num}`,
+            pdf_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(file)}`,
+            capa_url: `${R2_BASE}/${mod.pastaR2}/${encodeURIComponent(imgName)}`,
+            formato: "PDF"
+          };
+        });
+      } else {
+        catalogData = [];
+      }
+
+      filteredData = [...catalogData];
+      searchInput.value = '';
+      currentPage = 1;
+      renderCurrentPage();
+    }
+
+    function renderCurrentPage() {
+      catalogContainer.innerHTML = '';
+
+      if (filteredData.length === 0) {
+        catalogContainer.innerHTML = '<p style="color:var(--text-muted); font-size:13px; padding: 20px;">Nenhum documento cadastrado nesta pasta até o momento.</p>';
+        paginationContainer.innerHTML = '';
+        return;
+      }
+
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = currentPage * itemsPerPage;
+      const pageItems = filteredData.slice(start, end);
+
+      pageItems.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+
+        card.innerHTML = `
+          <div class="cover-container">
+            <img src="${item.capa_url}" alt="${item.titulo}" loading="lazy" 
+                 onerror="if (!this.dataset.triedAlt) { this.dataset.triedAlt='1'; this.src='${item.capa_alt || ''}'; } else { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
+            <div class="fallback-cover" style="display:none;">
+              <i class='bx bxs-file-pdf'></i>
+              <span>${item.formato}</span>
+            </div>
+          </div>
+          <div class="book-details">
+            <div class="book-title">${item.titulo}</div>
+            <span class="book-badge">${item.formato}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => openReader(item.titulo, item.pdf_url));
+        catalogContainer.appendChild(card);
+      });
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+      if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+      }
+
+      let html = `<button class="page-link" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})"><i class='bx bx-chevron-left'></i></button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button class="page-link ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+      }
+      html += `<button class="page-link" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})"><i class='bx bx-chevron-right'></i></button>`;
+
+      paginationContainer.innerHTML = html;
+    }
+
+    function changePage(page) {
+      currentPage = page;
+      renderCurrentPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openReader(title, pdfUrl) {
+      document.getElementById('modal-doc-title').innerText = title;
+      document.getElementById('modal-frame-wrapper').innerHTML = `<iframe src="${pdfUrl}"></iframe>`;
+      document.getElementById('modal-reader').classList.add('active');
+    }
+
+    function closeReader() {
+      document.getElementById('modal-frame-wrapper').innerHTML = '';
+      document.getElementById('modal-reader').classList.remove('active');
+    }
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    }
+
+    document.getElementById('btn-open-sidebar').addEventListener('click', toggleSidebar);
+    document.getElementById('btn-close-sidebar').addEventListener('click', toggleSidebar);
+    backdrop.addEventListener('click', toggleSidebar);
+    document.getElementById('btn-close-modal').addEventListener('click', closeReader);
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      filteredData = catalogData.filter(item => item.titulo.toLowerCase().includes(query));
+      currentPage = 1;
+      renderCurrentPage();
+    });
+
+    document.getElementById('btn-grid-mode').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('btn-list-mode').classList.remove('active');
+      catalogContainer.className = 'catalog-grid';
+    });
+    document.getElementById('btn-list-mode').addEventListener('click', function() {
+      this.classList.add('active');
+      document.getElementById('btn-grid-mode').classList.remove('active');
+      catalogContainer.className = 'catalog-grid list-view';
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      carregarModulo('eletrodinamica');
+    });
+  </script>
+</body>
+</html>
